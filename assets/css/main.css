@@ -2593,17 +2593,18 @@ input, select, textarea {
 /* Image */
 /* writen by me*/
 /* Basic Reset */
-* {
+/* {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-}
+}*/
 
 /* Image Container */
 .image-container {
-    width: 100%; /* Full width of its parent */
-    max-width: 600px; /* Maximum width for larger screens */
-    margin: 20px auto; /* Center the container */
+	max-width: 100%; /* Ensures the image never exceeds its container's width */
+    height: auto; /* Maintains the image's aspect ratio */
+    display: block; 
+   margin: 0px auto; /* Center the container */
 	align-items: center;
     border: 1px solid #ddd; /* Optional: Add a subtle border */
     border-radius: 8px; /* Rounded corners */
