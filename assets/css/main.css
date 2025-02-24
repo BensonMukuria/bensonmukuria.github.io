@@ -3059,18 +3059,18 @@ ul.icons.alt li a.icon:hover:before {
 		margin: auto 0;
 		width: auto;
 		margin: 2rem auto;
-		margin-left: 14rem;
+		margin-left: 8rem;
 	border-collapse: collapse;
 	font-size: 1rem;
 	text-align: left;
-	border: 0 solid #eeeeee;
+	border: 10px solid #eeeeee;
 		
 		
 	}
 
 		table tbody tr {
 			border: solid 1px;
-			border-left: ;
+			border-left: 0;
 			border-right: 0;
 		}
 
