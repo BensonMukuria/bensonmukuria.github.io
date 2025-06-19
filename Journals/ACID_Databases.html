@@ -1,0 +1,136 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+	<title>Benson Kimani portfolio</title>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+	<link rel="stylesheet" href="../assets/css/main.css" />
+	<noscript>
+		<link rel="stylesheet" href="../assets/css/noscript.css" />
+	</noscript>
+</head>
+
+<body class="is-preload">
+
+	<!-- Wrapper -->
+	<div id="wrapper" class="fade-in">
+
+		<!-- Header -->
+		<header id="header">
+			<a href="ACID_Databases.html" class="logo">ACID in Databases</a>
+		</header>
+
+		<!-- Nav -->
+		<nav id="nav">
+			<ul class="links">
+				<header id="header">
+					<a href="ACID_Databases.html" class="logo">ACID Principles</a>
+				</header>
+				<li class="active"><a href="ACID_Databases.html">ACID in Databases</a></li>
+			</ul>
+			<ul class="icons">
+				<li><a href="../Journals.html">Back</a></li>
+				<li><a href="../index.html">Home</a></li>
+			</ul>
+		</nav>
+
+		<!-- Main -->
+		<div id="main">
+
+			<!-- Posts -->
+			<div class="image fit">
+				<img src="../images/ACID_Databases.png" alt="ACID Databases">
+			</div>
+
+			<h2>Introduction</h2>
+			<p>As a data expert, understanding database principles is crucial, especially those related to <strong>ACID
+					(Atomicity, Consistency, Isolation, Durability)</strong>. These properties ensure reliable
+				transactions in handling financial systems, e-commerce, or even social media platforms. Let's explore
+				these principles through real-world scenarios we encounter daily.</p>
+
+			<h2>1. Atomicity: All or Nothing</h2>
+			<h3>✅ Scenario A: Flight Booking Payment</h3>
+			<p>You're booking a flight online. The payment process involves:
+			    <ol>
+				<li>Debiting your account.</li>
+				<li>Reserving your seat.</li>
+				<li>Sending a confirmation email.</li>
+			</ol>
+			<p>If the email server fails after your account is debited, Atomicity ensures the entire
+			transaction
+			is rolled back - your money is refunded and the seat is released. No partial bookings!</p>
+
+			<h3>❌ Scenario B: Partial File Upload</h3>
+			<p>You upload 100 product images to an e-commerce site, but the connection drops after 70 images. Without
+				Atomicity,
+				some images save while others fail, leaving your product catalog incomplete.
+				<strong>Atomicity guarantees that transactions are fully completed or fully reverted with no in-between
+					states.</strong>
+			</p>
+
+			<h2>2. Consistency: Follow the Rules</h2>
+			<h3>✅ Scenario A: Age-Restricted Purchase</h3>
+			<p>An online liquor store requires buyers to be 21+. If a 19-year-old tries to order, the database rejects
+				the transaction, maintaining consistency with business rules.</p>
+
+			<h3>❌ Scenario B: Overdraft Without Limits</h3>
+			<p>If a bank didn't enforce consistency, you could withdraw more money than you have, leading to negative
+				balances
+				without penalties.<strong>Consistency ensures databases always follow predefined rules, keeping data
+					valid before and after transactions.</strong></p>
+
+			<h2>3. Isolation: No Transaction Interference</h2>
+			<h3>✅ Scenario A: Two Sellers, One Product</h3>
+			<p>An online marketplace has <strong>only one PS5 left</strong>. Two sellers try to mark it as sold at the
+				same time. <strong>Isolation</strong> ensures only <strong>one</strong> succeeds, preventing
+				double-selling.</p>
+
+			<h3>❌ Scenario B: Double Booking in a Hotel</h3>
+			<p>Without isolation, two travel agents could book the <strong>same hotel room</strong> for different
+				guests, leading to an
+				embarrassing overbooking situation.<em>Isolation keeps transactions <strong>independent</strong>, so
+					concurrent actions don't corrupt data.</em></p>
+
+			<h2>4. Durability: Surviving the Crash</h2>
+			<h3>✅ Scenario A: Power Outage During Payment</h3>
+			<p>You confirm an order, but the system crashes before showing the receipt. <strong>Durability</strong>
+				ensures the transaction
+				is <strong>saved permanently</strong>, so your order isn't lost.</p>
+
+			<h3>❌ Scenario B: Lost Game Progress</h3>
+			<p>Imagine playing a game where your progress isn't saved after a crash—frustrating, right? Without
+				durability,
+				databases could lose committed transactions.<strong>Durability guarantees that once a transaction is
+					committed, it stays committed—even if the system fails.</strong></p>
+
+			<div class="highlight">
+				<h2>Final Thoughts</h2>
+				<p>ACID principles are the backbone of <strong>reliable databases</strong>. Whether you're handling
+					payments, inventory,
+					or user data, ensuring <strong>Atomicity, Consistency, Isolation, and Durability</strong> prevents
+					errors, corruption,
+					and chaos.Next time you make an online purchase, you should probabbly be thinking about how ACID keeps your transactions safe!
+				</p>
+			</div>
+		</div>
+
+		<!-- Copyright -->
+		<div id="copyright">
+			<ul>
+				<li>&copy; Benson Kimani</li>
+			</ul>
+		</div>
+	</div>
+
+	<!-- Scripts -->
+	<script src="assets/js/jquery.min.js"></script>
+	<script src="assets/js/jquery.scrollex.min.js"></script>
+	<script src="assets/js/jquery.scrolly.min.js"></script>
+	<script src="assets/js/browser.min.js"></script>
+	<script src="assets/js/breakpoints.min.js"></script>
+	<script src="assets/js/util.js"></script>
+	<script src="assets/js/main.js"></script>
+</body>
+
+</html>
