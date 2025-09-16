@@ -9,126 +9,170 @@
 	<noscript>
 		<link rel="stylesheet" href="assets/css/noscript.css" />
 	</noscript>
+	<style>
+		.profile-pic-container {
+			display: flex;
+			justify-content: center;
+			margin-bottom: 0px;
+			margin-top: 40px;
+			overflow: hidden;
+		}
+
+		.profile-pic {
+			width: 180px;
+			height: 180px;
+			border-radius: 50%;
+			object-fit: cover;
+			object-position: center top;
+			/* Adjust this based on your image */
+			border: 4px solid #fff;
+			box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+		}
+
+		#intro h1 {
+			margin-top: 20px;
+			margin-bottom: 0px;
+		}
+
+		@media (max-width: 768px) {
+			.profile-pic {
+				width: 150px;
+				height: 150px;
+			}
+		}
+
+		@media (max-width: 480px) {
+			.profile-pic {
+				width: 120px;
+				height: 120px;
+			}
+		}
+	</style>
 </head>
 
-<body class="is-preload">
+<div class="profile-pic-container">
+	<img src="images/Benson Kimani_passport.jpeg" alt="Benson Kimani" class="profile-pic" />
+</div>
+
+<!-- Header -->
+<header id="header">
+	<div id="intro">
 
 
-	<!-- Header -->
-	<header id="header">
-		<a href="index.html" class="logo">Benson Kimani</a>
-	</header>
+	</div>
+	<a href="index.html" class="logo">Benson Kimani</a>
+</header>
 
-	<!-- Nav -->
-	<nav id="nav">
-		<ul class="links">
-			<li class="inactive"><a href="index.html">Projects</a></li>
-			<li class="active"><a href="Journals.html">Journals</a></li>
-		</ul>
-		<ul class="icons">
+<!-- Nav -->
+<nav id="nav">
+	<ul class="links">
+		<li class="inactive"><a href="index.html">Projects</a></li>
+		<li class="active"><a href="Journals.html">Journals</a></li>
+	</ul>
+	<ul class="icons">
 
-			<li><a href="assets/Resume.pdf" target="_blank">Resume</a></li>
-			<li><a href="https://www.linkedin.com/in/benson-kimani-mukuria" target="_blank"
-					class="icon brands fa-linkedin"><span class="label">linkedin</span></a></li>
-			<li><a href="#" target="_blank" class="icon brands fa-github"><span class="label">GitHub</span></a></li>
-		</ul>
-	</nav>
+		<li><a href="assets/Resume.pdf" target="_blank">Resume</a></li>
+		<li><a href="https://www.linkedin.com/in/benson-kimani-mukuria" target="_blank"
+				class="icon brands fa-linkedin"><span class="label">linkedin</span></a></li>
+		<li><a href="#" target="_blank" class="icon brands fa-github"><span class="label">GitHub</span></a></li>
+	</ul>
+</nav>
 
-	<!-- Main -->
-	<div id="main">
+<!-- Main -->
+<div id="main">
 
-		<!-- Posts -->
-		<section class="posts">
+	<!-- Posts -->
+	<section class="posts">
+		<article>
+			<header>
+				<h2><a href="Journals/AB_Testing.html">A/B<br />
+						TESTING</a></h2>
+			</header>
+			<a href="Journals/AB_Testing.html" class="image fit"><img src="images/AB_Testing.png" alt="" /></a>
+			<p>
+			<P>As a data analyst, one of the most powerful tools in our toolkit is <b>A/B testing</b>.
+				It’s a method used to compare two versions of something to determine which one
+				performs better. We commonly use this method in testing a.....</p>
+			<ul class="actions special">
+				<li><a href="Journals/AB_Testing.html" class="button">Read More</a></li>
+			</ul>
+		</article>
+		<article>
+			<header>
+				<h2><a href="Journals/ACID_Databases.html">ACID<br />
+						IN DATABASES</a></h2>
+			</header>
+			<a href="Journals/ACID_Databases.html" class="image fit"><img src="images/ACID_Databases.png" alt="" /></a>
+			<p>As a data expert, understanding database principles is crucial, especially those related to
+				<strong>ACID
+					(Atomicity, Consistency, Isolation, Durability)</strong>. These.....
+			</p>
+
+			<ul class="actions special">
+				<li><a href="Journals/ACID_Databases.html" class="button">Read More</a></li>
+			</ul>
+		</article>
+		<article>
+
+		</article>
+		<article>
+
 			<article>
-				<header>
-					<h2><a href="Journals/AB_Testing.html">A/B<br />
-							TESTING</a></h2>
-				</header>
-				<a href="Journals/AB_Testing.html" class="image fit"><img src="images/AB_Testing.png" alt="" /></a>
-				<p>
-				<P>As a data analyst, one of the most powerful tools in our toolkit is <b>A/B testing</b>.
-					It’s a method used to compare two versions of something to determine which one
-					performs better. We commonly use this method in testing a.....</p>
-				<ul class="actions special">
-					<li><a href="Journals/AB_Testing.html" class="button">Read More</a></li>
-				</ul>
+
 			</article>
 			<article>
-				<header>
-					<h2><a href="Journals/ACID_Databases.html">ACID<br />
-							IN DATABASES</a></h2>
-				</header>
-				<a href="Journals/ACID_Databases.html" class="image fit"><img src="images/ACID_Databases.png"
-						alt="" /></a>
-				<p>As a data expert, understanding database principles is crucial, especially those related to
-					<strong>ACID
-						(Atomicity, Consistency, Isolation, Durability)</strong>. These.....</p>
-
-				<ul class="actions special">
-					<li><a href="Journals/ACID_Databases.html" class="button">Read More</a></li>
-				</ul>
-			</article>
-			<article>
 
 			</article>
-			<article>
+	</section>
 
-				<article>
 
-				</article>
-				<article>
 
-				</article>
+</div>
+
+<!-- Footer -->
+
+<footer id="footer">
+
+	<section class="split contact">
+
+		<section>
+			<h3>Phone</h3>
+			<p><a href="tel:+254 796436966">+254 796436966</a></p>
 		</section>
-
-
-
-	</div>
-
-	<!-- Footer -->
-
-	<footer id="footer">
-
-		<section class="split contact">
-
-			<section>
-				<h3>Phone</h3>
-				<p><a href="tel:+254 796436966">+254 796436966</a></p>
-			</section>
-			<section>
-				<h3>Email</h3>
-				<p><a href="mailto:benson.kimani.mukuria@gmail.com">benson.kimani.mukuria@gmail.com</a></p>
-			</section>
-			<section>
-				<h3>Socials</h3>
-				<ul class="icons alt">
-					<li><a href="https://www.linkedin.com/in/benson-kimani-mukuria" target="_blank"
-							class="icon brands fa-linkedin"><span class="label">linkedin</span></a></li>
-					<li><a href="#" target="_blank" class="icon brands fa-github"><span class="label">GitHub</span></a>
-					</li>
-				</ul>
-			</section>
+		<section>
+			<h3>Email</h3>
+			<p><a href="mailto:benson.kimani.mukuria@gmail.com">benson.kimani.mukuria@gmail.com</a></p>
 		</section>
-	</footer>
+		<section>
+			<h3>Socials</h3>
+			<ul class="icons alt">
+				<li><a href="https://www.linkedin.com/in/benson-kimani-mukuria" target="_blank"
+						class="icon brands fa-linkedin"><span class="label">linkedin</span></a></li>
+				<li><a href="#" target="_blank" class="icon brands fa-github"><span class="label">GitHub</span></a>
+				</li>
+			</ul>
+		</section>
+	</section>
+</footer>
 
-	<!-- Copyright -->
-	<div id="copyright">
-		<ul>
-			<li>&copy; Benson Kimani</li>
-			</li>
-		</ul>
-	</div>
+<!-- Copyright -->
+<div id="copyright">
+	<ul>
+		<li>&copy; Benson Kimani</li>
+		</li>
+	</ul>
+</div>
 
-	</div>
+</div>
 
-	<!-- Scripts -->
-	<script src="assets/js/jquery.min.js"></script>
-	<script src="assets/js/jquery.scrollex.min.js"></script>
-	<script src="assets/js/jquery.scrolly.min.js"></script>
-	<script src="assets/js/browser.min.js"></script>
-	<script src="assets/js/breakpoints.min.js"></script>
-	<script src="assets/js/util.js"></script>
-	<script src="assets/js/main.js"></script>
+<!-- Scripts -->
+<script src="assets/js/jquery.min.js"></script>
+<script src="assets/js/jquery.scrollex.min.js"></script>
+<script src="assets/js/jquery.scrolly.min.js"></script>
+<script src="assets/js/browser.min.js"></script>
+<script src="assets/js/breakpoints.min.js"></script>
+<script src="assets/js/util.js"></script>
+<script src="assets/js/main.js"></script>
 
 </body>
 
