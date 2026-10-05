@@ -2590,16 +2590,10 @@ input, select, textarea {
 			font-family: 'Font Awesome 5 Brands';
 		}
 
-/* Image */
-/* writen by me*/
-/* Basic Reset */
-/* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}*/
-
-/* Image Container */
+.image.container img {
+	width: 100%;
+	height: auto;
+}
 .image-container {
 	max-width: 100%; /* Ensures the image never exceeds its container's width */
     height: auto; /* Maintains the image's aspect ratio */
