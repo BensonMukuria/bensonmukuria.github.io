@@ -1,109 +1,215 @@
 <!DOCTYPE HTML>
-<html lang="en">
+<html>
+
 <head>
-    <title>Benson Kimani | HR Analysis Report</title>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="description" content="HR analysis report covering diversity, employee well-being, job-level distribution and promotion eligibility." />
-    <link rel="stylesheet" href="assets/css/main.css" />
-    <noscript><link rel="stylesheet" href="assets/css/noscript.css" /></noscript>
+	<title>Benson Kimani portfolio</title>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+	<link rel="stylesheet" href="../assets/css/main.css" />
+	<noscript>
+		<link rel="stylesheet" href="../assets/css/noscript.css" />
+	</noscript>
 </head>
+
 <body class="is-preload">
 
-<div id="wrapper" class="fade-in">
+	<!-- Wrapper -->
+	<div id="wrapper" class="fade-in">
 
-    <header id="header">
-        <a href="index.html" class="logo">HR Analysis Report</a>
-    </header>
+		<!-- Header -->
+		<header id="header">
+			<a href="Hr_analysis.html" class="logo">HR Analysis Report</a>
+		</header>
 
-    <nav id="nav">
-        <ul class="links">
-            <li class="active"><a href="Hr_analysis.html">HR Analysis Report</a></li>
-        </ul>
-        <ul class="icons">
-            <li><a href="index.html">Home</a></li>
-        </ul>
-    </nav>
+		<!-- Nav -->
+		<nav id="nav">
+			<ul class="links">
+				<header id="header">
+					<a href="Hr_analysis.html" class="logo">HR Analysis Report</a>
+				</header>
+				<li class="active"><a href="Hr_analysis.html">HR Analysis Report</a></li>
+			</ul>
+			<ul class="icons">
 
-    <main id="main" class="report-page">
+				<li><a href="../index.html">Home</a></li>
+				<li><a href="../Journals.html">Journals</a></li>
 
-        <div class="image container report-dashboard">
-            <img src="images/HR_Dashboard.png" alt="HR Analysis Dashboard" />
-        </div>
+			</ul>
 
-        <h2>Introduction</h2>
-        <p>This HR analysis report aims to provide an overview of key factors related to <b>diversity and inclusion</b>, <b>employee well-being</b>, <b>distribution across job levels</b>, and the identification of <b>employees due for promotion</b> within the organization. The assessment primarily focuses on <b>gender distribution</b> as a measure of <b>diversity</b> and <b>inclusion</b>, while considering <b>employee satisfaction</b> in terms of <b>marital status</b>, <b>work environment</b>, and <b>work-life balance</b>. By examining these aspects, the report aims to provide valuable insights into the current state of the organization and highlight areas that require attention and improvement. These findings will serve as a foundation for developing strategies and implementing initiatives that foster a more inclusive and supportive work environment, enhance employee well-being, and ensure fair opportunities for career growth and advancement.</p>
+		</nav>
 
-        <h2>Problem Statement</h2>
-        <p>The organization faces challenges related to diversity and inclusion, employee well-being, distribution across job levels, and the identification of employees due for promotion. These issues require attention to ensure an <b>inclusive workforce</b>, <b>enhance employee satisfaction</b>, address <b>potential disparities in career advancement</b>, and establish a <b>streamlined process for recognizing and promoting deserving employees</b>.</p>
 
-        <h2>Data Sourcing</h2>
-        <p>The organization provided a comprehensive dataset in CSV format for this HR analysis. The dataset includes <b>employee demographics</b>, satisfaction ratings on <b>the work environment</b>, <b>marital status</b>, and <b>work-life balance</b>, as well as information on <b>job levels</b> and <b>promotion eligibility</b>. This dataset serves as the foundation for deriving insights and recommendations to address diversity and inclusion, enhance employee well-being, and ensure fair career opportunities within the organization.</p>
 
-        <h2>Data Transformation</h2>
-        <p>The provided dataset underwent necessary transformations to enhance its usability for the HR analysis. One significant transformation involved converting all satisfaction ratings into two categories: <b>"satisfied"</b> or <b>"unsatisfied"</b> (or <b>"good"</b> and <b>"bad"</b>). This was achieved by creating additional columns using Power Query. These transformations enable a comprehensive analysis of employee satisfaction and well-being, providing more accurate insights and targeted recommendations for improvement.</p>
 
-        <section class="posts transformation-posts">
-            <article>
-                <p><i>Before transformation</i></p>
-                <div class="image fit"><img src="images/original.png" alt="Original HR data before transformation" /></div>
-            </article>
-            <article>
-                <p><i>Added transformed column</i></p>
-                <div class="image fit"><img src="images/transformed.png" alt="HR data after transformation" /></div>
-            </article>
-        </section>
+		<!-- Main -->
+		<div id="main">
 
-        <h2>Analysis and Visualization</h2>
+			<!-- Posts -->
 
-        <section class="report-finding">
-            <p><b>1. Diversity Findings</b></p>
-            <div class="image fit"><img src="images/gender.png" alt="Gender diversity findings" /></div>
-            <p>In the organization, out of the total of <b>1470 employees</b>, a gender analysis reveals a significant diversity gap. Among the employees, <b>882</b> individuals identify as <b>male</b>, while only <b>588</b> identify as <b>female</b>. This indicates a <b>gender imbalance</b> within the workforce, with a higher representation of males compared to females. Addressing this diversity gap and promoting gender equality will be crucial in fostering a more inclusive and representative work environment.</p>
-        </section>
 
-        <section class="report-finding">
-            <p><b>2. Employee Well-being Findings</b></p>
-            <div class="image fit"><img src="images/wellbeing.png" alt="Employee well-being findings" /></div>
-            <p>The analysis of employee well-being revealed that <b>60.61%</b> of employees were <b>satisfied</b> with their <b>marital status</b>, while <b>39.39%</b> expressed <b>dissatisfaction</b>. In terms of <b>environmental satisfaction</b>, <b>61.6%</b> reported being <b>satisfied</b>, while <b>38.4%</b> expressed <b>dissatisfaction</b>. Regarding <b>work-life balance</b>, <b>71.16%</b> reported a <b>good balance</b>, while <b>28.84%</b> reported a <b>poor balance</b>. These findings highlight the need to address marital satisfaction, improve the work environment, and support work-life balance for overall enhanced employee well-being.</p>
-        </section>
 
-        <section class="report-finding">
-            <p><b>3. Employee Distribution across Various Job Levels Findings</b></p>
-            <div class="image fit"><img src="images/distribution.png" alt="Employee distribution across job levels" /></div>
-            <p>The analysis of distribution across job levels revealed a breakdown of employee distribution as follows: levels 1 and 2, which represent lower levels, accounted for a combined total of 1077 employees. Level 3 had 218 employees, while levels 4 and 5 had a combined total of 175 employees. This distribution indicates a relatively fair progression across job levels, with a larger number of employees at the lower levels gradually decreasing as the levels advance.</p>
-        </section>
+			<div class="image fit">
+				<img src="../images/HR_Dashboard.png" alt="HR Dashboard" class="image container">
+			</div>
 
-        <section class="report-finding">
-            <p><b>4. Promotion Eligibility Findings</b></p>
-            <div class="image fit"><img src="images/Promotion.png" alt="Promotion eligibility findings" /></div>
-            <p>Among the employees analyzed, a total of <b>89</b> individuals who have been with the organization for <b>9 years or more</b> are eligible for <b>promotion</b>. Recognizing these long-serving employees and providing them with opportunities for career advancement is crucial to ensure fairness and reward their commitment to the organization. By implementing targeted promotion strategies, the organization can facilitate the professional growth of these eligible employees and maximize their contributions.</p>
-        </section>
+			<h2>Introduction</h2>
+			<P>This HR analysis report aims to provide an overview of key factors
+				related to <b>diversity and inclusion</b>, <b>employee well-being</b>, <b>distribution
+					across job levels</b>, and the identification of <b>employees due for promotion </b>
+				within the organization. The assessment primarily focuses on <b>gender distribution</b>
+				as a measure of <b>diversity</b> and <b>inclusion</b>, while considering <b>employee satisfaction</b> in
+				terms of <b>marital status</b>, <b>work environment</b>, and <b>work-life balance</b>. By examining
+				these
+				aspects, the report aims to provide valuable insights into the current state of the organization
+				and highlight areas that require attention and improvement. These findings will serve as a foundation
+				for developing strategies and implementing initiatives that foster a more inclusive and supportive
+				work environment, enhance employee well-being, and ensure fair opportunities for career growth and
+				advancement.</P>
+			<h2>Problem Statement</h2>
+			<p>The organization faces challenges related to diversity and inclusion, employee well-being,
+				distribution across job levels, and the identification of employees due for promotion. These
+				issues require attention to ensure an <b>inclusive workforce</b>, <b>enhance employee satisfaction</b>,
+				address <b>potential disparities in career advancement</b>, and establish a <b>streamlined process for
+					recognizing and promoting deserving employees</b>.</p>
+			<h2>Data Sourcing</h2>
+			<p>The organization provided a comprehensive dataset in CSV format for this HR analysis. The dataset
+				includes
+				<b>employee demographics</b>, satisfaction ratings on <b>the work environment</b>, <b>marital
+					status</b>, and <b>work-life balance</b>,
+				as well as information on <b>job levels</b> and <b>promotion eligibility</b>. This dataset serves as the
+				foundation for
+				deriving insights and recommendations to address diversity and inclusion, enhance employee well-being,
+				and
+				ensure fair career opportunities within the organization.
+			</p>
+			<h2>Data Transformation</h2>
+			<p>The provided dataset underwent necessary transformations to enhance its usability for the HR analysis.
+				One significant transformation involved converting all satisfaction ratings into two categories:
+				<b>"satisfied"</b> or <b>"unsatisfied"</b> .
+				This was achieved by creating additional columns using Power Query. Similarly. These transformations
+				enable a comprehensive analysis of employee satisfaction and well-being, providing more accurate
+				insights and targeted recommendations for improvement.
+			</p>
+			<section class="posts">
+				<article>
+					<p><i>Before transformation</i>
 
-        <p><a href="https://app.powerbi.com/view?r=eyJrIjoiOWZlZGU3MTQtNjFjOS00Njc4LWJiYTQtYjFmN2Y4ZjIwZDBhIiwidCI6ImRmODY3OWNkLWE4MGUtNDVkOC05OWFjLWM4M2VkN2ZmOTVhMCJ9" target="_blank" rel="noopener">Click to see an interactive dashboard of the report</a></p>
+						<br><img src="../images/original.png" class="image container"></br>
+				</article>
+				<article>
+					<p><i>Added transformed column</i>
 
-        <h2>Recommendations</h2>
-        <p><b>1. Enhancing Diversity and Inclusion:</b> Address the gender imbalance by implementing initiatives to promote gender diversity and inclusion within the organization. This can include measures such as targeted recruitment efforts, diversity training programs, and creating a supportive work environment that values and celebrates diversity.</p>
-        <p><b>2. Improving Employee Well-being:</b> Pay attention to employees' marital satisfaction, work environment, and work-life balance. Provide resources and support systems to help employees maintain a healthy work-life balance and address any concerns related to marital well-being. Continuously assess and improve the work environment to ensure employee satisfaction and engagement.</p>
-        <p><b>3. Recognizing Long-Serving Employees:</b> Develop a formalized recognition program for employees who have been with the organization for an extended period without receiving a promotion. Implement strategies such as skills assessment, mentoring, and personalized development plans to provide growth opportunities and recognize their contributions.</p>
-        <p><b>4. Continuous Data Analysis:</b> Regularly analyze and monitor HR data to identify emerging trends, areas of improvement, and potential disparities. Use data-driven insights to inform decision-making processes and drive targeted interventions that support diversity, employee well-being, and career development.</p>
+						<br><img src="../images/transformed.png" class="image container"></br>
+				</article>
+			</section>
+			<h2>Analysis and visualization</h2>
+			<p><b>1.Diversity Findings<br></b>
+				
+					<img  height="150" width="700" src="../images/gender.png" class="image container">
+				
 
-        <p class="thank-you">THANK YOU</p>
+				<br>In the organization, out of the total of <b>1470 employees</b>, a gender analysis reveals
+				a significant diversity gap. Among the employees, <b>882</b> individuals identify as <b>male</b>,
+				while only <b>588 </b>identify as<b>female</b>. This indicates a <b>gender imbalance</b> within the
+				workforce,
+				with a higher representation of males compared to females. Addressing this diversity gap
+				and promoting gender equality will be crucial in fostering a more inclusive and
+				representative work environment.
+			</p>
+			<p><b>2.Employee Well-being Findings</b>
+				<br><img height="200" width="700" src="../images/wellbeing.png" class="image container"></br>
 
-    </main>
+				The analysis of employee well-being revealed that <b>60.61%</b> of employees were <b>satisfied</b>
+				with their <b>marital status</b>, while <b>39.39%</b> expressed <b>dissatisfaction</b>. In terms of
+				<b>environmental satisfaction</b>, <b>61.6%</b> reported being <b>satisfied</b>, while <b>38.4%</b>
+				expressed <b>dissatisfaction</b>. Regarding <b>work-life balance</b>, <b>71.16%</b> reported a
+				<b>good balance</b>, while <b>28.84%</b> reported a <b>poor balance</b>. These findings highlight
+				the need to address marital satisfaction, improve the work environment, and support work-life
+				balance for overall enhanced employee well-being.
+			</p>
+			<p><b>3.Employee Distribution across various job levels Findings<br></b>
+			<div style="display: flex; align-items: top; gap: 20px;">
+				<img height="350" width="500" src= "../images/distribution.png"alt="Description" >
+				
+				The analysis of distribution across job levels revealed a breakdown of employee distribution as follows:
+					levels 1 and 2, which represent lower levels, accounted for a combined total of 1077 employees. Level 3
+					had 218 employees, while levels 4 and 5 had a combined total of 175 employees. This distribution
+					indicates
+					a relatively fair progression across job levels, with a larger number of employees at the lower levels
+					gradually decreasing as the levels advance.
+			  </div>
+			  <p><b>4.Promotion Eligibility Findings<br></b>
+				<div style="display: flex; align-items: top; gap: 20px;">
+					
+					
+				Among the employees analyzed a total of 89 individuals who have been with the 
+				organization for
+				9 years or more are eligible for promotion. Recognizing these 
+				long-serving employees and
+				providing them with opportunities for career advancement is crucial to ensure fairness
+				 and rewarding
+				their
+				commitment to the organization. By implementing targeted promotion strategies, the 
+				organization can
+				facilitate
+				the professional growth of these eligible employees and maximize their contributions.
+				<img height="350" width="450" src= "../images/Promotion.png" alt="Description" >
+				  </div>
+		
+			<p><a
+					href="https://app.powerbi.com/view?r=eyJrIjoiOWZlZGU3MTQtNjFjOS00Njc4LWJiYTQtYjFmN2Y4ZjIwZDBhIiwidCI6ImRmODY3OWNkLWE4MGUtNDVkOC05OWFjLWM4M2VkN2ZmOTVhMCJ9">Click
+					to see an interactive dashboard of the report</a></p>
+			<h2>Recommendations</h2>
+			<ol><b>1.Enhancing Diversity and Inclusion:</b> Address the gender imbalance by implementing initiatives to
+				promote gender diversity and inclusion within the organization. This can include measures such as
+				targeted recruitment efforts, diversity training programs, and creating a supportive work environment
+				that values and celebrates diversity.</br></ol>
+			<ol><b>2.Improving Employee Well-being:</b> Pay attention to employees' marital satisfaction, work
+				environment, and work-life balance. Provide resources and support systems to help employees maintain a
+				healthy work-life balance and address any concerns related to marital well-being. Continuously assess
+				and improve the work environment to ensure employee satisfaction and engagement. </ol>
+			<ol><b>3.Recognizing Long-Serving Employees:</b> Develop a formalized recognition program for employees who
+				have been with the organization for an extended period without receiving a promotion. Implement
+				strategies such as skills assessment, mentoring, and personalized development plans to provide growth
+				opportunities and recognize their contributions.</ol>
+			<ol><b>4.Continuous Data Analysis:</b> Regularly analyze and monitor HR data to identify emerging trends,
+				areas of improvement, and potential disparities. Use data-driven insights to inform decision-making
+				processes and drive targeted interventions that support diversity, employee well-being, and career
+				development.</ol>
+			<t></t>
+			<t></t>
+			<t></t>
+			<t>THANK YOU</t>
 
-    <div id="copyright">
-        <ul><li>&copy; Benson Kimani</li></ul>
-    </div>
-</div>
 
-<script src="assets/js/jquery.min.js"></script>
-<script src="assets/js/jquery.scrollex.min.js"></script>
-<script src="assets/js/jquery.scrolly.min.js"></script>
-<script src="assets/js/browser.min.js"></script>
-<script src="assets/js/breakpoints.min.js"></script>
-<script src="assets/js/util.js"></script>
-<script src="assets/js/main.js"></script>
+
+
+
+
+
+
+
+		</div>
+
+		<!-- Copyright -->
+		<div id="copyright">
+			<ul>
+				<li>&copy; Benson Kimani</li>
+				</li>
+			</ul>
+		</div>
+
+	</div>
+
+	<!-- Scripts -->
+	<script src="assets/js/jquery.min.js"></script>
+	<script src="assets/js/jquery.scrollex.min.js"></script>
+	<script src="assets/js/jquery.scrolly.min.js"></script>
+	<script src="assets/js/browser.min.js"></script>
+	<script src="assets/js/breakpoints.min.js"></script>
+	<script src="assets/js/util.js"></script>
+	<script src="assets/js/main.js"></script>
 
 </body>
+
 </html>
