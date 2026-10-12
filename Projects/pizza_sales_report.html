@@ -140,6 +140,9 @@
   .download p{margin:0;font-size:.93rem;max-width:44ch}
   .download a{background:var(--ink);color:var(--paper);text-decoration:none;font-weight:600;font-size:.88rem;padding:10px 18px;border-radius:5px;white-space:nowrap}
   .download a:focus-visible{outline:2px solid var(--sage);outline-offset:2px}
+  .video{margin:22px 0 22px}
+  .video video{width:100%;display:block;border:1px solid var(--line);border-radius:6px;background:#1e2321;aspect-ratio:16/9}
+  .video figcaption{font-size:.8rem;color:var(--ink-soft);margin-top:8px;font-style:italic}
 </style>
 </head>
 <body>
@@ -184,6 +187,7 @@ Images used by this page (save them in the images folder, same names):
     <a class="sub" href="#f5">5. Busiest hours</a>
     <a class="sub" href="#f6">6. Store locations</a>
     <a href="#recommendations">Recommendations</a>
+    <a href="#explore">Watch and download</a>
   </nav>
 
   <main>
@@ -363,11 +367,7 @@ RETURN
       <h2>Recommendations</h2>
       <div class="reco">
         <h4>Staff for lunch and early evening</h4>
-<<<<<<< HEAD
-        <p>We should Put the strongest crews and the most prep into 12:00 to 13:00 and 17:00 to 19:00. Trim hours after 20:00 on the days where slots fall to $2K to $4K, and keep Friday evenings fully staffed.</p>
-=======
         <p>We should put the strongest crews and the most prep into 12:00 to 13:00 and 17:00 to 19:00. Trim hours after 20:00 on the days where slots fall to $2K to $4K, and keep Friday evenings fully staffed.</p>
->>>>>>> 5ed3a4137c10946f6c7c187a43b56f9f4c44d119
       </div>
       <div class="reco">
         <h4>Lift Allentown, Hartford and Jersey City</h4>
@@ -391,13 +391,25 @@ RETURN
       </div>
     </section>
 
-  <!-- <div class="cta">
-      <p>The finished report is built page by page above. A link to the live version can go here.</p>
-       Replace the # below with the published Power BI report link 
-      <a href="#">Open the interactive dashboard</a>
-    </div>
+    <section id="explore">
+      <h2>Watch and download</h2>
+      <p>A short walkthrough of both report pages, with captions on each visual and a look at how the month slicer changes the numbers. Below it you can download the Power BI file and open the model, measures and visuals yourself.</p>
+      <figure class="video">
+        <!-- Save the video as assets/pizza_dashboard_explainer.mp4 (optional: images/pizza_video_poster.png for the cover) -->
+        <video controls preload="metadata" playsinline poster="../images/pizza_video_poster.png">
+          <source src="../assets/pizza_dashboard_explainer.mp4" type="video/mp4">
+          Your browser cannot play this video. <a href="../assets/pizza_dashboard_explainer.mp4">Download it instead.</a>
+        </video>
+        <figcaption>Report walkthrough, about 80 seconds.</figcaption>
+      </figure>
+      <div class="download">
+        <p><b>Download the Power BI report.</b> The .pbix file has the star schema, every DAX measure and both report pages. Open it in Power BI Desktop (free).</p>
+        <!-- Save the file as assets/Pizza_Sales_Report.pbix, or replace the href with your own link -->
+        <a href="../assets/Pizza_Sales_Report.pbix" download>Download .pbix</a>
+      </div>
+    </section>
   </main>
-</div> -->
+</div>
 
 <footer>&copy; Benson Kimani</footer>
 
