@@ -1,215 +1,260 @@
-<!DOCTYPE HTML>
-<html>
-
+<!DOCTYPE html>
+<html lang="en">
 <head>
-	<title>Benson Kimani portfolio</title>
-	<meta charset="utf-8" />
-	<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
-	<link rel="stylesheet" href="../assets/css/main.css" />
-	<noscript>
-		<link rel="stylesheet" href="../assets/css/noscript.css" />
-	</noscript>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>HR Analytics Report — Benson Kimani</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,500;8..60,600;8..60,700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1e2321; --ink-soft:#4b534e; --paper:#eeece4; --panel:#fdfcf9;
+    --clay:#b9793a; --sage:#5f6f5a; --line:#d9d5c9; --line-soft:#e4e1d6;
+    --serif:"Source Serif 4",Georgia,serif; --sans:"IBM Plex Sans",-apple-system,"Segoe UI",sans-serif;
+    box-sizing:border-box;
+    padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+  }
+  *{box-sizing:border-box}
+  html{scroll-padding-top:14px}
+  body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--sans);line-height:1.65;
+    font-variant-numeric:tabular-nums;}
+  a{color:var(--clay)}
+
+  .topbar{
+    display:flex;align-items:center;justify-content:space-between;gap:12px;
+    padding:16px 28px;border-bottom:1px solid var(--line);background:var(--paper);
+    position:sticky;top:0;z-index:20;
+  }
+  .topbar .mark{font-family:var(--serif);font-weight:600;font-size:1.02rem}
+  .topbar .mark span{color:var(--ink-soft);font-weight:400;font-size:.85rem;margin-left:8px}
+  .topbar a.home{font-size:.85rem;font-weight:500;text-decoration:none;border-bottom:1px solid var(--clay);padding-bottom:1px}
+
+  .layout{display:grid;grid-template-columns:220px minmax(0,1fr);gap:0;max-width:1120px;margin:0 auto}
+  nav.toc{
+    position:sticky;top:57px;align-self:start;padding:40px 18px 40px 28px;
+    font-size:.86rem;height:calc(100vh - 57px);overflow-y:auto;
+  }
+  nav.toc a{display:block;color:var(--ink-soft);text-decoration:none;padding:6px 0;border-left:2px solid transparent;padding-left:12px;margin-left:-13px}
+  nav.toc a:hover{color:var(--ink)}
+  nav.toc a.current{color:var(--sage);border-left-color:var(--sage);font-weight:600}
+  nav.toc .group-label{font-weight:600;color:var(--ink);margin-top:16px}
+  nav.toc .group-label:first-child{margin-top:0}
+  nav.toc .sub{padding-left:22px;margin-left:-13px}
+
+  main{padding:48px 32px 90px;min-width:0;max-width:720px}
+
+  .hero h1{font-family:var(--serif);font-weight:700;font-size:2.5rem;line-height:1.12;margin:0 0 10px}
+  .hero .dek{font-size:1.08rem;color:var(--ink-soft);max-width:540px;margin:0 0 30px}
+  .hero .stat{display:flex;align-items:baseline;gap:14px;border-top:1px solid var(--line);padding-top:20px}
+  .hero .stat .n{font-family:var(--serif);font-weight:700;font-size:2.6rem;color:var(--clay)}
+  .hero .stat .l{font-size:.92rem;color:var(--ink-soft)}
+
+  section{margin-top:64px;scroll-margin-top:72px}
+  section h2{font-family:var(--serif);font-weight:600;font-size:1.5rem;margin:0 0 16px}
+  section p{margin:0 0 16px;max-width:66ch}
+  section p b{font-weight:600;color:var(--ink)}
+
+  .pair{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin:20px 0 8px}
+  .pair figure{margin:0}
+  .pair img{width:100%;display:block;border:1px solid var(--line);border-radius:4px}
+  .pair figcaption{font-size:.8rem;color:var(--ink-soft);margin-top:8px;font-style:italic}
+
+  .finding{border-top:1px solid var(--line);padding-top:36px;margin-top:36px}
+  .finding .num{font-family:var(--serif);color:var(--sage);font-weight:600;font-size:.95rem;margin:0 0 4px}
+  .finding h3{font-family:var(--serif);font-size:1.3rem;font-weight:600;margin:0 0 18px}
+
+  .statrow{display:flex;gap:28px;flex-wrap:wrap;margin:0 0 22px}
+  .statrow .s{min-width:120px}
+  .statrow .s .v{font-size:1.7rem;font-weight:700;color:var(--clay);font-family:var(--serif)}
+  .statrow .s .k{font-size:.8rem;color:var(--ink-soft)}
+
+  .split{display:flex;gap:6px;height:10px;border-radius:5px;overflow:hidden;margin:10px 0 22px;max-width:360px}
+  .split .a{background:var(--clay)}
+  .split .b{background:var(--line)}
+
+  .levels{display:flex;flex-direction:column;gap:8px;max-width:420px;margin:0 0 22px}
+  .levels .row{display:grid;grid-template-columns:70px 1fr 50px;align-items:center;gap:10px;font-size:.85rem}
+  .levels .bar{height:16px;background:var(--line-soft);border-radius:3px;overflow:hidden}
+  .levels .bar i{display:block;height:100%;background:var(--clay)}
+
+  .evidence{margin:22px 0 6px;max-width:420px}
+  .evidence img{width:100%;display:block;border:1px solid var(--line);border-radius:4px}
+  .evidence figcaption{font-size:.78rem;color:var(--ink-soft);margin-top:8px}
+
+  .reco{border-left:3px solid var(--sage);padding:4px 0 4px 18px;margin:0 0 24px}
+  .reco h4{font-family:var(--serif);font-size:1.08rem;font-weight:600;margin:0 0 6px}
+  .reco p{margin:0;max-width:62ch}
+
+  .cta{
+    margin-top:56px;padding:26px 28px;background:var(--panel);border:1px solid var(--line);border-radius:8px;
+    display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap
+  }
+  .cta p{margin:0;font-size:.95rem;max-width:40ch}
+  .cta a{
+    background:var(--ink);color:var(--paper);text-decoration:none;font-weight:600;font-size:.9rem;
+    padding:11px 20px;border-radius:5px;white-space:nowrap
+  }
+
+  footer{padding:30px 32px 60px;color:var(--ink-soft);font-size:.82rem;border-top:1px solid var(--line);margin-top:40px}
+
+  @media (max-width:860px){
+    .layout{grid-template-columns:1fr}
+    nav.toc{display:none}
+    main{padding:34px 20px 70px;max-width:100%}
+    .hero h1{font-size:1.9rem}
+    .pair{grid-template-columns:1fr}
+  }
+  .cover{margin:28px 0 0}
+  .cover img{width:100%;display:block;border:1px solid var(--line);border-radius:6px}
+  .cover figcaption{font-size:.8rem;color:var(--ink-soft);margin-top:8px;font-style:italic}
+</style>
 </head>
+<body>
 
-<body class="is-preload">
+<div class="topbar">
+  <div class="mark">HR Analytics Report <span>Benson Kimani</span></div>
+  <a class="home" href="../index.html">Home</a>
+</div>
 
-	<!-- Wrapper -->
-	<div id="wrapper" class="fade-in">
+<div class="layout">
+  <nav class="toc" id="toc">
+    <a href="#intro" class="current">Introduction</a>
+    <a href="#problem">Problem statement</a>
+    <a href="#sourcing">Data sourcing</a>
+    <a href="#transformation">Transformation</a>
+    <div class="group-label">Findings</div>
+    <a class="sub" href="#f1">1. Diversity</a>
+    <a class="sub" href="#f2">2. Well-being</a>
+    <a class="sub" href="#f3">3. Job levels</a>
+    <a class="sub" href="#f4">4. Promotion</a>
+    <a href="#recommendations">Recommendations</a>
+  </nav>
 
-		<!-- Header -->
-		<header id="header">
-			<a href="Hr_analysis.html" class="logo">HR Analysis Report</a>
-		</header>
+  <main>
+    <div class="hero">
+      <h1>A workforce read on diversity, well-being, and promotion readiness</h1>
+      <p class="dek">An HR analytics review built in Power BI, covering gender balance, employee satisfaction, job-level distribution, and who's overdue for promotion.</p>
+      <div class="stat"><span class="n">1,470</span><span class="l">employees analyzed across the organization</span></div>
+      <figure class="cover"><img src="../images/Hr_Dashboard.png" alt="HR analytics dashboard in Power BI"><figcaption>The full HR dashboard in Power BI</figcaption></figure>
+    </div>
 
-		<!-- Nav -->
-		<nav id="nav">
-			<ul class="links">
-				<header id="header">
-					<a href="Hr_analysis.html" class="logo">HR Analysis Report</a>
-				</header>
-				<li class="active"><a href="Hr_analysis.html">HR Analysis Report</a></li>
-			</ul>
-			<ul class="icons">
+    <section id="intro">
+      <h2>Introduction</h2>
+      <p>This HR analysis report provides an overview of key factors related to <b>diversity and inclusion</b>, <b>employee well-being</b>, <b>distribution across job levels</b>, and the identification of <b>employees due for promotion</b> within the organization. The assessment primarily focuses on <b>gender distribution</b> as a measure of diversity and inclusion, while considering employee satisfaction in terms of marital status, work environment, and work-life balance.</p>
+      <p>By examining these aspects, the report provides insights into the current state of the organization and highlights areas that require attention. These findings serve as a foundation for strategies that foster a more inclusive and supportive work environment, enhance employee well-being, and ensure fair opportunities for career growth.</p>
+    </section>
 
-				<li><a href="../index.html">Home</a></li>
-				<li><a href="../Journals.html">Journals</a></li>
+    <section id="problem">
+      <h2>Problem statement</h2>
+      <p>The organization faces challenges related to diversity and inclusion, employee well-being, distribution across job levels, and the identification of employees due for promotion. These issues require attention to ensure an <b>inclusive workforce</b>, <b>enhance employee satisfaction</b>, address <b>potential disparities in career advancement</b>, and establish a <b>streamlined process for recognizing and promoting deserving employees</b>.</p>
+    </section>
 
-			</ul>
+    <section id="sourcing">
+      <h2>Data sourcing</h2>
+      <p>The organization provided a comprehensive dataset in CSV format for this analysis. It includes <b>employee demographics</b>, satisfaction ratings on the <b>work environment</b>, <b>marital status</b>, and <b>work-life balance</b>, along with information on <b>job levels</b> and <b>promotion eligibility</b>. This dataset serves as the foundation for deriving insights and recommendations.</p>
+    </section>
 
-		</nav>
+    <section id="transformation">
+      <h2>Data transformation</h2>
+      <p>The dataset underwent transformation to improve its usability. One key step converted satisfaction ratings into two categories — <b>"satisfied"</b> or <b>"unsatisfied"</b> (and <b>"good"</b> or <b>"bad"</b>) — using additional columns built in Power Query. This enabled a more direct read on employee satisfaction and well-being.</p>
+      <div class="pair">
+        <figure><img loading="lazy" src="../images/original.png" alt="Before transformation"><figcaption>Before transformation</figcaption></figure>
+        <figure><img loading="lazy" src="../images/transformed.png" alt="Added transformed column"><figcaption>Added transformed column</figcaption></figure>
+      </div>
+    </section>
 
+    <h2 style="font-family:var(--serif);font-weight:600;font-size:1.65rem;margin:64px 0 0">Analysis and visualization</h2>
 
+    <div class="finding" id="f1">
+      <p class="num">Finding 1</p>
+      <h3>Diversity</h3>
+      <div class="statrow">
+        <div class="s"><div class="v">882</div><div class="k">identify as male</div></div>
+        <div class="s"><div class="v">588</div><div class="k">identify as female</div></div>
+        <div class="s"><div class="v">60 / 40</div><div class="k">male-to-female split</div></div>
+      </div>
+      <div class="split"><div class="a" style="flex:882"></div><div class="b" style="flex:588"></div></div>
+      <p>Out of <b>1,470 employees</b>, a gender analysis reveals a significant diversity gap, with a higher representation of males compared to females. Addressing this gap and promoting gender equality will be crucial in fostering a more inclusive and representative work environment.</p>
+      <figure class="evidence"><img loading="lazy" src="../images/gender.png" alt="Gender breakdown dashboard"><figcaption>Source: Power BI dashboard, gender breakdown panel</figcaption></figure>
+    </div>
 
+    <div class="finding" id="f2">
+      <p class="num">Finding 2</p>
+      <h3>Employee well-being</h3>
+      <div class="statrow">
+        <div class="s"><div class="v">60.6%</div><div class="k">satisfied — marital status</div></div>
+        <div class="s"><div class="v">61.6%</div><div class="k">satisfied — environment</div></div>
+        <div class="s"><div class="v">71.2%</div><div class="k">good work-life balance</div></div>
+      </div>
+      <p>Marital satisfaction stood at <b>60.61%</b> satisfied versus <b>39.39%</b> dissatisfied. Environmental satisfaction was <b>61.6%</b> satisfied versus <b>38.4%</b> dissatisfied. Work-life balance was rated good by <b>71.16%</b>, with <b>28.84%</b> reporting a poor balance. These findings point to a need to address marital satisfaction, improve the work environment, and support work-life balance.</p>
+      <figure class="evidence"><img loading="lazy" src="../images/wellbeing.png" alt="Well-being dashboard"><figcaption>Source: Power BI dashboard, well-being panel</figcaption></figure>
+    </div>
 
-		<!-- Main -->
-		<div id="main">
+    <div class="finding" id="f3">
+      <p class="num">Finding 3</p>
+      <h3>Distribution across job levels</h3>
+      <div class="levels">
+        <div class="row"><span>Level 1</span><div class="bar"><i style="width:100%"></i></div><span>543</span></div>
+        <div class="row"><span>Level 2</span><div class="bar"><i style="width:98%"></i></div><span>534</span></div>
+        <div class="row"><span>Level 3</span><div class="bar"><i style="width:40%"></i></div><span>218</span></div>
+        <div class="row"><span>Level 4</span><div class="bar"><i style="width:20%"></i></div><span>106</span></div>
+        <div class="row"><span>Level 5</span><div class="bar"><i style="width:13%"></i></div><span>69</span></div>
+      </div>
+      <p>Levels 1 and 2 — the lower levels — account for a combined <b>1,077 employees</b>. Level 3 has <b>218</b>, while levels 4 and 5 combine for <b>175</b>. This shows a relatively fair progression across job levels, with headcount gradually decreasing as levels advance.</p>
+      <figure class="evidence"><img loading="lazy" src="../images/distribution.png" alt="Job level distribution dashboard"><figcaption>Source: Power BI dashboard, job-level panel</figcaption></figure>
+    </div>
 
-			<!-- Posts -->
+    <div class="finding" id="f4">
+      <p class="num">Finding 4</p>
+      <h3>Promotion eligibility</h3>
+      <div class="statrow">
+        <div class="s"><div class="v">89</div><div class="k">eligible for promotion</div></div>
+        <div class="s"><div class="v">9+ yrs</div><div class="k">tenure threshold</div></div>
+      </div>
+      <p><b>89 employees</b> who have been with the organization for <b>9 years or more</b> are eligible for promotion. Recognizing these long-serving employees with clear advancement opportunities is key to fairness and rewarding their commitment — and to retaining them.</p>
+      <figure class="evidence"><img loading="lazy" src="../images/Promotion.png" alt="Promotion eligibility dashboard"><figcaption>Source: Power BI dashboard, promotion-eligibility panel</figcaption></figure>
+    </div>
 
+    <section id="recommendations">
+      <h2>Recommendations</h2>
+      <div class="reco">
+        <h4>Enhancing diversity and inclusion</h4>
+        <p>Address the gender imbalance through targeted recruitment, diversity training, and a work environment that visibly values and celebrates diversity.</p>
+      </div>
+      <div class="reco">
+        <h4>Improving employee well-being</h4>
+        <p>Provide resources and support systems for work-life balance, and continuously assess the work environment to sustain satisfaction and engagement.</p>
+      </div>
+      <div class="reco">
+        <h4>Recognizing long-serving employees</h4>
+        <p>Formalize a recognition program for long-tenured employees, using skills assessment, mentoring, and personalized development plans.</p>
+      </div>
+      <div class="reco">
+        <h4>Continuous data analysis</h4>
+        <p>Regularly monitor HR data to catch emerging trends and disparities early, and use the findings to drive targeted interventions.</p>
+      </div>
+    </section>
 
+    <div class="cta">
+      <p>See the figures above live, with filters you can apply yourself.</p>
+      <a href="https://app.powerbi.com/view?r=eyJrIjoiOWZlZGU3MTQtNjFjOS00Njc4LWJiYTQtYjFmN2Y4ZjIwZDBhIiwidCI6ImRmODY3OWNkLWE4MGUtNDVkOC05OWFjLWM4M2VkN2ZmOTVhMCJ9">Open the interactive dashboard</a>
+    </div>
+  </main>
+</div>
 
-			<div class="image fit">
-				<img src="../images/HR_Dashboard.png" alt="HR Dashboard" class="image container">
-			</div>
+<footer>&copy; Benson Kimani</footer>
 
-			<h2>Introduction</h2>
-			<P>This HR analysis report aims to provide an overview of key factors
-				related to <b>diversity and inclusion</b>, <b>employee well-being</b>, <b>distribution
-					across job levels</b>, and the identification of <b>employees due for promotion </b>
-				within the organization. The assessment primarily focuses on <b>gender distribution</b>
-				as a measure of <b>diversity</b> and <b>inclusion</b>, while considering <b>employee satisfaction</b> in
-				terms of <b>marital status</b>, <b>work environment</b>, and <b>work-life balance</b>. By examining
-				these
-				aspects, the report aims to provide valuable insights into the current state of the organization
-				and highlight areas that require attention and improvement. These findings will serve as a foundation
-				for developing strategies and implementing initiatives that foster a more inclusive and supportive
-				work environment, enhance employee well-being, and ensure fair opportunities for career growth and
-				advancement.</P>
-			<h2>Problem Statement</h2>
-			<p>The organization faces challenges related to diversity and inclusion, employee well-being,
-				distribution across job levels, and the identification of employees due for promotion. These
-				issues require attention to ensure an <b>inclusive workforce</b>, <b>enhance employee satisfaction</b>,
-				address <b>potential disparities in career advancement</b>, and establish a <b>streamlined process for
-					recognizing and promoting deserving employees</b>.</p>
-			<h2>Data Sourcing</h2>
-			<p>The organization provided a comprehensive dataset in CSV format for this HR analysis. The dataset
-				includes
-				<b>employee demographics</b>, satisfaction ratings on <b>the work environment</b>, <b>marital
-					status</b>, and <b>work-life balance</b>,
-				as well as information on <b>job levels</b> and <b>promotion eligibility</b>. This dataset serves as the
-				foundation for
-				deriving insights and recommendations to address diversity and inclusion, enhance employee well-being,
-				and
-				ensure fair career opportunities within the organization.
-			</p>
-			<h2>Data Transformation</h2>
-			<p>The provided dataset underwent necessary transformations to enhance its usability for the HR analysis.
-				One significant transformation involved converting all satisfaction ratings into two categories:
-				<b>"satisfied"</b> or <b>"unsatisfied"</b> .
-				This was achieved by creating additional columns using Power Query. Similarly. These transformations
-				enable a comprehensive analysis of employee satisfaction and well-being, providing more accurate
-				insights and targeted recommendations for improvement.
-			</p>
-			<section class="posts">
-				<article>
-					<p><i>Before transformation</i>
-
-						<br><img src="../images/original.png" class="image container"></br>
-				</article>
-				<article>
-					<p><i>Added transformed column</i>
-
-						<br><img src="../images/transformed.png" class="image container"></br>
-				</article>
-			</section>
-			<h2>Analysis and visualization</h2>
-			<p><b>1.Diversity Findings<br></b>
-				
-					<img  height="150" width="700" src="../images/gender.png" class="image container">
-				
-
-				<br>In the organization, out of the total of <b>1470 employees</b>, a gender analysis reveals
-				a significant diversity gap. Among the employees, <b>882</b> individuals identify as <b>male</b>,
-				while only <b>588 </b>identify as<b>female</b>. This indicates a <b>gender imbalance</b> within the
-				workforce,
-				with a higher representation of males compared to females. Addressing this diversity gap
-				and promoting gender equality will be crucial in fostering a more inclusive and
-				representative work environment.
-			</p>
-			<p><b>2.Employee Well-being Findings</b>
-				<br><img height="200" width="700" src="../images/wellbeing.png" class="image container"></br>
-
-				The analysis of employee well-being revealed that <b>60.61%</b> of employees were <b>satisfied</b>
-				with their <b>marital status</b>, while <b>39.39%</b> expressed <b>dissatisfaction</b>. In terms of
-				<b>environmental satisfaction</b>, <b>61.6%</b> reported being <b>satisfied</b>, while <b>38.4%</b>
-				expressed <b>dissatisfaction</b>. Regarding <b>work-life balance</b>, <b>71.16%</b> reported a
-				<b>good balance</b>, while <b>28.84%</b> reported a <b>poor balance</b>. These findings highlight
-				the need to address marital satisfaction, improve the work environment, and support work-life
-				balance for overall enhanced employee well-being.
-			</p>
-			<p><b>3.Employee Distribution across various job levels Findings<br></b>
-			<div style="display: flex; align-items: top; gap: 20px;">
-				<img height="350" width="500" src= "../images/distribution.png"alt="Description" >
-				
-				The analysis of distribution across job levels revealed a breakdown of employee distribution as follows:
-					levels 1 and 2, which represent lower levels, accounted for a combined total of 1077 employees. Level 3
-					had 218 employees, while levels 4 and 5 had a combined total of 175 employees. This distribution
-					indicates
-					a relatively fair progression across job levels, with a larger number of employees at the lower levels
-					gradually decreasing as the levels advance.
-			  </div>
-			  <p><b>4.Promotion Eligibility Findings<br></b>
-				<div style="display: flex; align-items: top; gap: 20px;">
-					
-					
-				Among the employees analyzed a total of 89 individuals who have been with the 
-				organization for
-				9 years or more are eligible for promotion. Recognizing these 
-				long-serving employees and
-				providing them with opportunities for career advancement is crucial to ensure fairness
-				 and rewarding
-				their
-				commitment to the organization. By implementing targeted promotion strategies, the 
-				organization can
-				facilitate
-				the professional growth of these eligible employees and maximize their contributions.
-				<img height="350" width="450" src= "../images/Promotion.png" alt="Description" >
-				  </div>
-		
-			<p><a
-					href="https://app.powerbi.com/view?r=eyJrIjoiOWZlZGU3MTQtNjFjOS00Njc4LWJiYTQtYjFmN2Y4ZjIwZDBhIiwidCI6ImRmODY3OWNkLWE4MGUtNDVkOC05OWFjLWM4M2VkN2ZmOTVhMCJ9">Click
-					to see an interactive dashboard of the report</a></p>
-			<h2>Recommendations</h2>
-			<ol><b>1.Enhancing Diversity and Inclusion:</b> Address the gender imbalance by implementing initiatives to
-				promote gender diversity and inclusion within the organization. This can include measures such as
-				targeted recruitment efforts, diversity training programs, and creating a supportive work environment
-				that values and celebrates diversity.</br></ol>
-			<ol><b>2.Improving Employee Well-being:</b> Pay attention to employees' marital satisfaction, work
-				environment, and work-life balance. Provide resources and support systems to help employees maintain a
-				healthy work-life balance and address any concerns related to marital well-being. Continuously assess
-				and improve the work environment to ensure employee satisfaction and engagement. </ol>
-			<ol><b>3.Recognizing Long-Serving Employees:</b> Develop a formalized recognition program for employees who
-				have been with the organization for an extended period without receiving a promotion. Implement
-				strategies such as skills assessment, mentoring, and personalized development plans to provide growth
-				opportunities and recognize their contributions.</ol>
-			<ol><b>4.Continuous Data Analysis:</b> Regularly analyze and monitor HR data to identify emerging trends,
-				areas of improvement, and potential disparities. Use data-driven insights to inform decision-making
-				processes and drive targeted interventions that support diversity, employee well-being, and career
-				development.</ol>
-			<t></t>
-			<t></t>
-			<t></t>
-			<t>THANK YOU</t>
-
-
-
-
-
-
-
-
-
-		</div>
-
-		<!-- Copyright -->
-		<div id="copyright">
-			<ul>
-				<li>&copy; Benson Kimani</li>
-				</li>
-			</ul>
-		</div>
-
-	</div>
-
-	<!-- Scripts -->
-	<script src="assets/js/jquery.min.js"></script>
-	<script src="assets/js/jquery.scrollex.min.js"></script>
-	<script src="assets/js/jquery.scrolly.min.js"></script>
-	<script src="assets/js/browser.min.js"></script>
-	<script src="assets/js/breakpoints.min.js"></script>
-	<script src="assets/js/util.js"></script>
-	<script src="assets/js/main.js"></script>
+<script>
+const links = document.querySelectorAll('nav.toc a');
+const sections = Array.from(links).map(a => document.querySelector(a.getAttribute('href')));
+window.addEventListener('scroll', () => {
+  let idx = 0;
+  sections.forEach((s, i) => { if (s && s.getBoundingClientRect().top < 100) idx = i; });
+  links.forEach(a => a.classList.remove('current'));
+  links[idx].classList.add('current');
+}, { passive: true });
+</script>
 
 </body>
-
 </html>
