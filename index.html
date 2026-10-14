@@ -44,9 +44,9 @@
   .btn.solid:hover{background:var(--clay-dark);border-color:var(--clay-dark);color:#fff}
   .btn.ghost{background:transparent;color:var(--ink)}
   .btn.ghost:hover{background:var(--ink);color:var(--paper)}
-  .portrait{position:relative;width:190px;height:190px;border-radius:50%;overflow:hidden;border:1px solid var(--line);background:var(--panel);justify-self:end}
+  .portrait{position:relative;width:190px;min-height:190px;border-radius:14px;overflow:hidden;border:1px solid var(--line);background:var(--panel);justify-self:end;box-shadow:0 14px 30px -20px rgba(30,35,33,.5)}
   .portrait .mono{position:absolute;inset:0;display:grid;place-items:center;font-family:var(--serif);font-weight:600;font-size:3.2rem;color:var(--clay)}
-  .portrait img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
+  .portrait img{position:relative;z-index:1;width:100%;height:auto;display:block}
 
   /* proof strip */
   .proof{border-block:1px solid var(--line);background:var(--panel)}
@@ -106,7 +106,7 @@
   @media (max-width:860px){
     .hero{padding-block:44px 40px}
     .hero .wrap{grid-template-columns:1fr;gap:28px}
-    .portrait{order:-1;justify-self:start;width:110px;height:110px}
+    .portrait{order:-1;justify-self:start;width:130px;min-height:130px}
     .portrait .mono{font-size:2rem}
     .proof .wrap{grid-template-columns:repeat(2,minmax(0,1fr))}
     .proof .item:nth-child(3){border-left:0;padding-left:0}
@@ -129,7 +129,7 @@
       <a class="hide-sm" href="#about">About</a>
       <a class="hide-sm" href="Journals.html">Journals</a>
       <a class="hide-sm" href="#contact">Contact</a>
-      <a class="pill" href="assets/Resume.pdf" target="_blank" rel="noopener">Resume</a>
+      <a class="pill" href="assets/BENSON%20KIMANI%20MUKURIA.pdf" target="_blank" rel="noopener">Resume</a>
     </nav>
   </div>
 </header>
@@ -146,10 +146,10 @@
           <a class="btn ghost" href="https://www.linkedin.com/in/benson-kimani-mukuria" target="_blank" rel="noopener">LinkedIn</a>
         </div>
       </div>
-      <!-- Save your photo as images/profile.jpg. Until then the initials show. -->
+      <!-- Photo: shown in full (no cropping). If the file is missing, the initials show instead. -->
       <div class="portrait" aria-hidden="false">
         <span class="mono" aria-hidden="true">BK</span>
-        <img src="images/Benson Kimani_passport.jpeg" alt="Portrait of Benson Kimani Mukuria" onerror="this.remove()">
+        <img src="images/Benson%20Kimani_passport.jpeg" alt="Portrait of Benson Kimani Mukuria" onerror="this.remove()">
       </div>
     </div>
   </section>
@@ -167,13 +167,13 @@
     <div class="wrap">
       <div class="head">
         <h2>Projects</h2>
-        <p>Each one has a full write-up, from loading the data to the recommendations.</p>
+        <p>Each one has a full write-up.</p>
       </div>
       <div class="cards">
 
         <article class="card">
           <a class="shot" href="Projects/pizza_sales_report.html" tabindex="-1" aria-hidden="true">
-            <img loading="lazy" src="images/Pizza_Dashboard.png" alt="">
+            <img loading="lazy" src="images/Pizza_Dashboard1.jfif" alt="">
           </a>
           <div class="body">
             <ul class="tags"><li>Power BI</li><li>DAX</li><li>Power Query</li><li>Star schema</li></ul>
@@ -235,7 +235,7 @@
     </div>
     <div class="actions">
       <a class="btn solid" href="mailto:benson.kimani.mukuria@gmail.com">Email me</a>
-      <a class="btn ghost" href="assets/Resume.pdf" target="_blank" rel="noopener">Download resume</a>
+      <a class="btn ghost" href="assets/BENSON%20KIMANI%20MUKURIA.pdf" target="_blank" rel="noopener">Download resume</a>
       <a class="btn ghost" href="https://www.linkedin.com/in/benson-kimani-mukuria" target="_blank" rel="noopener">LinkedIn</a>
     </div>
   </div>
