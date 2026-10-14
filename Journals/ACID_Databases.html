@@ -1,136 +1,318 @@
-<!DOCTYPE HTML>
-<html>
-
+<!DOCTYPE html>
+<html lang="en">
 <head>
-	<title>Benson Kimani portfolio</title>
-	<meta charset="utf-8" />
-	<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
-	<link rel="stylesheet" href="../assets/css/main.css" />
-	<noscript>
-		<link rel="stylesheet" href="../assets/css/noscript.css" />
-	</noscript>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ACID in Databases | Benson Kimani Mukuria</title>
+<meta name="description" content="What atomicity, consistency, isolation and durability mean in a database, explained with everyday examples and short SQL snippets.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,500;8..60,600;8..60,700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1e2321; --ink-soft:#4b534e; --paper:#eeece4; --panel:#fdfcf9;
+    --clay:#b9793a; --clay-dark:#8f5a25; --sage:#5f6f5a; --line:#d9d5c9; --line-soft:#e4e1d6;
+    --serif:"Source Serif 4",Georgia,serif; --sans:"IBM Plex Sans",-apple-system,"Segoe UI",sans-serif;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth;scroll-padding-top:72px}
+  body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--sans);line-height:1.65;font-variant-numeric:tabular-nums}
+  a{color:inherit}
+  a:focus-visible,.btn:focus-visible{outline:2px solid var(--sage);outline-offset:3px}
+  .wrap{max-width:1040px;margin:0 auto;padding-inline:24px}
+
+  /* top bar */
+  .topbar{position:sticky;top:0;z-index:20;background:rgba(238,236,228,.94);backdrop-filter:blur(6px);border-bottom:1px solid var(--line)}
+  .topbar .wrap{display:flex;align-items:center;justify-content:space-between;gap:16px;padding-block:14px}
+  .brand{font-family:var(--serif);font-weight:600;font-size:1.05rem;text-decoration:none}
+  .topbar nav{display:flex;align-items:center;gap:22px;font-size:.9rem;font-weight:500}
+  .topbar nav a{text-decoration:none;color:var(--ink-soft)}
+  .topbar nav a:hover{color:var(--ink)}
+  .topbar nav a.pill{color:var(--paper);background:var(--ink);padding:7px 16px;border-radius:999px;font-weight:600}
+  .topbar nav a.pill:hover{background:var(--clay-dark);color:#fff}
+
+  /* hero */
+  .hero{padding-block:72px 56px}
+  .hero .wrap{display:grid;grid-template-columns:minmax(0,1fr) 190px;gap:48px;align-items:center}
+  .eyebrow{font-size:.78rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--sage);margin:0 0 14px}
+  .hero h1{font-family:var(--serif);font-weight:700;font-size:clamp(2.2rem,5.2vw,3.5rem);line-height:1.08;margin:0 0 18px;text-wrap:balance}
+  .hero h1 em{font-style:normal;color:var(--clay)}
+  .hero p.lead{font-size:1.12rem;color:var(--ink-soft);max-width:54ch;margin:0 0 28px}
+  .actions{display:flex;flex-wrap:wrap;gap:12px}
+  .btn{display:inline-block;text-decoration:none;font-weight:600;font-size:.92rem;padding:12px 22px;border-radius:6px;border:1px solid var(--ink);transition:background .15s,color .15s,border-color .15s}
+  .btn.solid{background:var(--ink);color:var(--paper)}
+  .btn.solid:hover{background:var(--clay-dark);border-color:var(--clay-dark);color:#fff}
+  .btn.ghost{background:transparent;color:var(--ink)}
+  .btn.ghost:hover{background:var(--ink);color:var(--paper)}
+  .portrait{position:relative;width:190px;min-height:190px;border-radius:14px;overflow:hidden;border:1px solid var(--line);background:var(--panel);justify-self:end;box-shadow:0 14px 30px -20px rgba(30,35,33,.5)}
+  .portrait .mono{position:absolute;inset:0;display:grid;place-items:center;font-family:var(--serif);font-weight:600;font-size:3.2rem;color:var(--clay)}
+  .portrait img{position:relative;z-index:1;width:100%;height:auto;display:block}
+
+  /* proof strip */
+  .proof{border-block:1px solid var(--line);background:var(--panel)}
+  .proof .wrap{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:0}
+  .proof .item{padding:22px 20px;border-left:1px solid var(--line-soft)}
+  .proof .item:first-child{border-left:0;padding-left:0}
+  .proof .v{font-family:var(--serif);font-weight:700;font-size:1.9rem;color:var(--clay);line-height:1.1}
+  .proof .k{font-size:.84rem;color:var(--ink-soft);margin-top:4px}
+
+  /* sections */
+  section.block{padding-block:72px 8px}
+  .head{display:flex;align-items:baseline;justify-content:space-between;gap:16px;flex-wrap:wrap;margin:0 0 28px}
+  .head h2{font-family:var(--serif);font-weight:600;font-size:1.7rem;margin:0}
+  .head p{margin:0;color:var(--ink-soft);font-size:.95rem}
+
+  /* project cards */
+  .cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:28px}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:10px;overflow:hidden;display:flex;flex-direction:column;transition:transform .18s,box-shadow .18s}
+  .card:hover{transform:translateY(-3px);box-shadow:0 14px 30px -18px rgba(30,35,33,.45)}
+  .card .shot{display:block;aspect-ratio:16/9;overflow:hidden;border-bottom:1px solid var(--line);background:var(--line-soft)}
+  .card .shot img{width:100%;height:100%;object-fit:cover;object-position:top;display:block}
+  .card .body{padding:22px 24px 24px;display:flex;flex-direction:column;gap:12px;flex:1}
+  .tags{display:flex;flex-wrap:wrap;gap:6px;margin:0;padding:0;list-style:none}
+  .tags li{font-size:.74rem;font-weight:600;letter-spacing:.03em;color:var(--sage);border:1px solid var(--line);border-radius:999px;padding:2px 10px;background:var(--paper)}
+  .card h3{font-family:var(--serif);font-weight:600;font-size:1.35rem;margin:0;line-height:1.25}
+  .card h3 a{text-decoration:none}
+  .card p{margin:0;color:var(--ink-soft);font-size:.96rem}
+  .card .result{color:var(--ink);font-weight:500}
+  .card .links{display:flex;flex-wrap:wrap;gap:18px;margin-top:auto;padding-top:6px;font-size:.92rem;font-weight:600}
+  .card .links a{color:var(--clay-dark);text-decoration:none;border-bottom:1px solid var(--clay)}
+  .card .links a:hover{color:var(--ink);border-color:var(--ink)}
+
+  /* about */
+  .about{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:48px;align-items:start}
+  .about p{margin:0 0 16px;max-width:60ch}
+  .skills{margin:0;padding:0;list-style:none;display:flex;flex-wrap:wrap;gap:10px}
+  .skills li{font-size:.9rem;font-weight:500;background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:7px 14px}
+  .skills-label{font-size:.78rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--sage);margin:0 0 12px}
+
+  /* contact */
+  .contact{margin-top:80px;background:var(--ink);color:var(--paper)}
+  .contact .wrap{padding-block:56px;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:32px;align-items:center}
+  .contact h2{font-family:var(--serif);font-weight:600;font-size:1.8rem;margin:0 0 8px}
+  .contact p{margin:0;color:#c9c8bf;max-width:46ch}
+  .contact .rows{display:flex;flex-direction:column;gap:6px;margin-top:20px;font-size:.95rem}
+  .contact .rows a{color:var(--paper);text-decoration:none;border-bottom:1px solid #5b625d;width:fit-content}
+  .contact .rows a:hover{border-color:var(--clay)}
+  .contact .btn.solid{background:var(--paper);color:var(--ink);border-color:var(--paper)}
+  .contact .btn.solid:hover{background:var(--clay);border-color:var(--clay);color:#fff}
+  .contact .btn.ghost{color:var(--paper);border-color:#7b817c}
+  .contact .btn.ghost:hover{background:var(--paper);color:var(--ink)}
+  .contact .actions{flex-direction:column;align-items:stretch}
+  .contact .actions .btn{text-align:center}
+  footer{background:var(--ink);color:#8d928e;font-size:.82rem;border-top:1px solid #323937}
+  footer .wrap{padding-block:18px}
+
+  @media (max-width:860px){
+    .hero{padding-block:44px 40px}
+    .hero .wrap{grid-template-columns:1fr;gap:28px}
+    .portrait{order:-1;justify-self:start;width:130px;min-height:130px}
+    .portrait .mono{font-size:2rem}
+    .proof .wrap{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .proof .item:nth-child(3){border-left:0;padding-left:0}
+    .proof .item:nth-child(n+3){border-top:1px solid var(--line-soft)}
+    .cards,.about{grid-template-columns:1fr}
+    .about{gap:28px}
+    .contact .wrap{grid-template-columns:1fr}
+    .topbar nav a.hide-sm{display:none}
+  }
+  @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}.card{transition:none}.card:hover{transform:none}}
+
+  /* journal article */
+  .topbar nav a.current{color:var(--ink);border-bottom:2px solid var(--clay);padding-bottom:2px}
+  .art-head{padding-block:60px 12px}
+  .art-head .wrap,.art-body .wrap{max-width:780px}
+  .crumbs{font-size:.85rem;margin:0 0 22px}
+  .crumbs a{color:var(--ink-soft);text-decoration:none;border-bottom:1px solid var(--line)}
+  .crumbs a:hover{color:var(--ink);border-color:var(--ink)}
+  .art-head h1{font-family:var(--serif);font-weight:700;font-size:clamp(2rem,4.8vw,3rem);line-height:1.1;margin:0 0 16px;text-wrap:balance}
+  .art-head h1 em{font-style:normal;color:var(--clay)}
+  .art-head .dek{font-size:1.12rem;color:var(--ink-soft);max-width:60ch;margin:0 0 18px}
+  .art-head .meta{font-size:.84rem;color:var(--ink-soft);margin:0 0 30px}
+  .cover{margin:0 0 8px}
+  .cover img{width:100%;display:block;border:1px solid var(--line);border-radius:8px}
+  .art-body{padding-block:28px 0}
+  .intoc{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:18px 22px;margin:0 0 34px}
+  .intoc b{display:block;font-size:.78rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--sage);margin-bottom:8px}
+  .intoc ol{margin:0;padding-left:20px;columns:2;column-gap:32px;font-size:.92rem}
+  .intoc li{margin:3px 0;break-inside:avoid}
+  .intoc a{text-decoration:none;color:var(--ink-soft)}
+  .intoc a:hover{color:var(--clay-dark);text-decoration:underline}
+  .prose{font-size:1.04rem}
+  .prose h2{font-family:var(--serif);font-weight:600;font-size:1.55rem;line-height:1.25;margin:56px 0 14px;scroll-margin-top:80px;text-wrap:balance}
+  .prose h3{font-family:var(--serif);font-weight:600;font-size:1.15rem;margin:26px 0 8px}
+  .prose p{margin:0 0 16px;max-width:66ch}
+  .prose b,.prose strong{font-weight:600}
+  .prose ul,.prose ol{max-width:66ch;margin:0 0 18px;padding-left:22px}
+  .prose li{margin:6px 0}
+  .prose a{color:var(--clay-dark)}
+  .prose code{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:.88em;background:var(--panel);border:1px solid var(--line-soft);border-radius:4px;padding:1px 5px}
+  pre.code{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:14px 16px;overflow-x:auto;font-size:.84rem;line-height:1.6;margin:0 0 8px;font-family:ui-monospace,Menlo,Consolas,monospace;max-width:100%}
+  .codecap{font-size:.82rem;color:var(--ink-soft);font-style:italic;margin:0 0 20px}
+  .tablewrap{overflow-x:auto;margin:20px 0 14px;max-width:100%}
+  table.data{border-collapse:collapse;width:100%;min-width:480px;font-size:.94rem;background:var(--panel);border:1px solid var(--line)}
+  table.data th,table.data td{padding:10px 14px;text-align:left;border-bottom:1px solid var(--line-soft);vertical-align:top}
+  table.data th{font-size:.78rem;letter-spacing:.08em;text-transform:uppercase;color:var(--sage);background:var(--paper);font-weight:600}
+  table.data td.num,table.data th.num{text-align:right}
+  table.data tr:last-child td{border-bottom:0}
+  .hyp{margin:0 0 18px;display:grid;gap:10px;max-width:66ch}
+  .hyp div{border-left:3px solid var(--sage);padding:2px 0 2px 16px}
+  .hyp dt{font-weight:600;font-size:.9rem}
+  .hyp dd{margin:2px 0 0}
+  .callout{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--clay);border-radius:6px;padding:20px 24px;margin:40px 0 0}
+  .callout h2{margin:0 0 10px;font-size:1.3rem}
+  .callout p:last-child{margin-bottom:0}
+  .pair{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:8px 0 18px}
+  .pair>div{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:16px 18px}
+  .pair .lab{font-size:.74rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase;margin:0 0 6px}
+  .pair .ok .lab{color:var(--sage)}
+  .pair .bad .lab{color:var(--clay-dark)}
+  .pair p{margin:0;font-size:.97rem}
+  .pair h4{font-family:var(--serif);font-size:1.02rem;margin:0 0 6px}
+  .takeaways{counter-reset:t;list-style:none;padding:0;margin:0 0 8px;display:grid;gap:12px;max-width:66ch}
+  .takeaways li{counter-increment:t;display:grid;grid-template-columns:34px 1fr;gap:10px;margin:0}
+  .takeaways li::before{content:counter(t);font-family:var(--serif);font-weight:600;color:var(--sage);font-size:1.1rem;border-bottom:1px solid var(--line);align-self:start;padding-bottom:2px}
+  .prevnext{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-top:56px;padding-top:24px;border-top:1px solid var(--line)}
+  .prevnext a{display:block;text-decoration:none;max-width:48%;min-width:200px}
+  .prevnext small{display:block;font-size:.74rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--sage)}
+  .prevnext span{font-family:var(--serif);font-weight:600;font-size:1.1rem;border-bottom:1px solid var(--clay)}
+  .prevnext a:hover span{color:var(--clay-dark)}
+  .prevnext .next{margin-left:auto;text-align:right}
+  .contact{margin-top:96px}
+  @media (max-width:860px){
+    .art-head{padding-block:36px 8px}
+    .intoc ol{columns:1}
+    .pair{grid-template-columns:1fr}
+    .prevnext a{max-width:100%}
+    .prevnext .next{text-align:left;margin-left:0}
+  }
+</style>
 </head>
+<body>
 
-<body class="is-preload">
+<header class="topbar">
+  <div class="wrap">
+    <a class="brand" href="../index.html">Benson Kimani</a>
+    <nav aria-label="Main">
+      <a class="hide-sm" href="../index.html#projects">Projects</a>
+      <a class="hide-sm" href="../index.html#about">About</a>
+      <a class="hide-sm current" href="../Journals.html" aria-current="page">Journals</a>
+      <a class="hide-sm" href="#contact">Contact</a>
+      <a class="pill" href="../assets/BENSON%20KIMANI%20MUKURIA.pdf" target="_blank" rel="noopener">Resume</a>
+    </nav>
+  </div>
+</header>
 
-	<!-- Wrapper -->
-	<div id="wrapper" class="fade-in">
+<main>
+  <article>
+    <header class="art-head">
+      <div class="wrap">
+        <p class="crumbs"><a href="../Journals.html">&larr; All journals</a></p>
+        <p class="eyebrow">Journal</p>
+        <h1>ACID in databases, <em>one everyday example</em> at a time</h1>
+        <p class="dek">Atomicity, consistency, isolation and durability: four promises that keep data trustworthy, explained with simple examples.</p>
+        <p class="meta">By Benson Kimani Mukuria &middot; 5 min read</p>
+        <figure class="cover"><img src="../images/ACID_Databases.png" alt="ACID in databases illustration"></figure>
+      </div>
+    </header>
 
-		<!-- Header -->
-		<header id="header">
-			<a href="ACID_Databases.html" class="logo">ACID in Databases</a>
-		</header>
+    <div class="art-body">
+      <div class="wrap">
+        <nav class="intoc" aria-label="In this note"><b>In this note</b><ol><li><a href="#glance">The four at a glance</a></li><li><a href="#atomicity">Atomicity</a></li><li><a href="#consistency">Consistency</a></li><li><a href="#isolation">Isolation</a></li><li><a href="#durability">Durability</a></li><li><a href="#relaxed">When ACID is relaxed</a></li><li><a href="#final">Final thoughts</a></li></ol></nav>
+        <div class="prose">
 
-		<!-- Nav -->
-		<nav id="nav">
-			<ul class="links">
-				<header id="header">
-					<a href="ACID_Databases.html" class="logo">ACID Principles</a>
-				</header>
-				<li class="active"><a href="ACID_Databases.html">ACID in Databases</a></li>
-			</ul>
-			<ul class="icons">
-				<li><a href="../Journals.html">Back</a></li>
-				<li><a href="../index.html">Home</a></li>
-			</ul>
-		</nav>
+<p>If you work with data, you will sooner or later meet the word ACID. It stands for <b>atomicity, consistency, isolation and durability</b>, and it describes four promises a database makes about transactions. A transaction is a group of changes that belong together, like moving money from one account to another.</p>
+<p>These promises are the reason you can pay for something online and trust that the payment, the order and the receipt all agree with each other. They matter to analysts too, because they decide whether the numbers you pull from a database can be trusted at the moment you pull them. Here are the four, one everyday example at a time.</p>
 
-		<!-- Main -->
-		<div id="main">
+<h2 id="glance">The four at a glance</h2>
+<div class="tablewrap"><table class="data">
+  <thead><tr><th>Property</th><th>The promise</th><th>In short</th></tr></thead>
+  <tbody>
+    <tr><td><b>Atomicity</b></td><td>Every step of a transaction happens, or none of them do.</td><td>All or nothing</td></tr>
+    <tr><td><b>Consistency</b></td><td>A transaction never leaves the data breaking the rules the database knows about.</td><td>Follow the rules</td></tr>
+    <tr><td><b>Isolation</b></td><td>Transactions running at the same time do not see or disturb each other's unfinished work.</td><td>Mind your own business</td></tr>
+    <tr><td><b>Durability</b></td><td>Once a transaction is confirmed, it stays saved, even if the system crashes.</td><td>Saved means saved</td></tr>
+  </tbody>
+</table></div>
 
-			<!-- Posts -->
-			<div class="image fit">
-				<img src="../images/ACID_Databases.png" alt="ACID Databases">
-			</div>
+<h2 id="atomicity">1. Atomicity: all or nothing</h2>
+<p>A transaction is treated as one unit. If any part fails, the database undoes everything the transaction did so far.</p>
+<div class="pair">
+  <div class="ok"><p class="lab">When it works</p><h4>Booking a flight</h4><p>Paying for a ticket means two changes: your account is debited and a seat is reserved for you. If the seat cannot be reserved, the debit is rolled back and you keep your money. The confirmation email is normally sent only after the transaction is saved, so a failed email server cannot undo a booking that went through.</p></div>
+  <div class="bad"><p class="lab">When it is missing</p><h4>A load that stops halfway</h4><p>You load 100,000 rows into a table and the connection drops at row 70,000. Without atomicity you are left with half a table and no easy way to know which rows made it. With it, the database discards the 70,000 and you simply run the load again.</p></div>
+</div>
+<p>In SQL, the pattern for moving money between two accounts looks like this:</p>
+<pre class="code">BEGIN;
+UPDATE accounts SET balance = balance - 5000 WHERE id = 1;
+UPDATE accounts SET balance = balance + 5000 WHERE id = 2;
+COMMIT;   -- if anything fails before this line, ROLLBACK undoes both updates</pre>
+<p class="codecap">The exact keywords vary a little between databases. SQL Server, for example, uses BEGIN TRANSACTION.</p>
 
-			<h2>Introduction</h2>
-			<p>As a data expert, understanding database principles is crucial, especially those related to <strong>ACID
-					(Atomicity, Consistency, Isolation, Durability)</strong>. These properties ensure reliable
-				transactions in handling financial systems, e-commerce, or even social media platforms. Let's explore
-				these principles through real-world scenarios we encounter daily.</p>
+<h2 id="consistency">2. Consistency: follow the rules</h2>
+<p>The database only accepts changes that keep its data valid. The rules are the ones you build into it: primary keys, foreign keys, <code>NOT NULL</code>, <code>CHECK</code> conditions and so on. A transaction that would break one of them is rejected.</p>
+<div class="pair">
+  <div class="ok"><p class="lab">When it works</p><h4>An order needs a real customer</h4><p>A foreign key means you cannot create an order for a customer ID that does not exist. A check on the stock column means a sale cannot push the quantity below zero. The bad insert is refused instead of being saved.</p></div>
+  <div class="bad"><p class="lab">When it is missing</p><h4>Orders that belong to nobody</h4><p>Without those rules, orders slip in with unknown customers. They show up later as blank rows in a report and as joins that quietly drop data. For an account that does not allow overdrafts, the same gap lets the balance go negative with no warning.</p></div>
+</div>
+<pre class="code">CREATE TABLE accounts (
+    id      INT PRIMARY KEY,
+    balance DECIMAL(12,2) NOT NULL CHECK (balance >= 0)
+);</pre>
+<p class="codecap">With this rule in place, any change that would make a balance negative is refused</p>
+<p>One thing to keep in mind: the database only protects the rules it has been told about. A rule like "buyers must be 21 or older" is usually checked by the application, unless someone also builds it into the database.</p>
 
-			<h2>1. Atomicity: All or Nothing</h2>
-			<h3>✅ Scenario A: Flight Booking Payment</h3>
-			<p>You're booking a flight online. The payment process involves:
-			    <ol>
-				<li>Debiting your account.</li>
-				<li>Reserving your seat.</li>
-				<li>Sending a confirmation email.</li>
-			</ol>
-			<p>If the email server fails after your account is debited, Atomicity ensures the entire
-			transaction
-			is rolled back - your money is refunded and the seat is released. No partial bookings!</p>
+<h2 id="isolation">3. Isolation: no interference</h2>
+<p>When many transactions run at once, each should behave as if it were running alone. Nobody should see half-finished work from someone else.</p>
+<div class="pair">
+  <div class="ok"><p class="lab">When it works</p><h4>One console left, two buyers</h4><p>An online shop has one PS5 in stock and two people click buy at the same moment. Isolation makes the database handle them one after the other. One gets the console and the other is told it has sold out.</p></div>
+  <div class="bad"><p class="lab">When it is missing</p><h4>The double-booked hotel room</h4><p>Two travel agents check the same room at the same time, both see it as free, and both book it. Two guests turn up for one room.</p></div>
+</div>
+<p>Isolation is not all or nothing. Databases let you choose how strict it is, from loosest to strictest: read uncommitted, read committed, repeatable read and serializable. The stricter levels are safer but slower, because transactions end up waiting for each other. Many databases, including PostgreSQL, SQL Server and Oracle, default to read committed, while MySQL's InnoDB engine defaults to repeatable read.</p>
+<p>For analysts this shows up in a practical way. If you run a report while a large data load is still going, the isolation level decides whether you can end up looking at numbers from a half-finished load.</p>
 
-			<h3>❌ Scenario B: Partial File Upload</h3>
-			<p>You upload 100 product images to an e-commerce site, but the connection drops after 70 images. Without
-				Atomicity,
-				some images save while others fail, leaving your product catalog incomplete.
-				<strong>Atomicity guarantees that transactions are fully completed or fully reverted with no in-between
-					states.</strong>
-			</p>
+<h2 id="durability">4. Durability: surviving a crash</h2>
+<p>Once the database tells you a transaction is committed, that change is permanent. A crash or power cut right afterwards must not lose it.</p>
+<div class="pair">
+  <div class="ok"><p class="lab">When it works</p><h4>The crash before the receipt</h4><p>You confirm an order and the system goes down before the receipt appears. When it restarts, your order is still there, because it was saved before you were told it succeeded.</p></div>
+  <div class="bad"><p class="lab">When it is missing</p><h4>The lost game save</h4><p>You play for an hour, the game crashes, and the progress is gone. In a database that means committed sales or payments vanishing after a restart, and a daily total that no longer adds up.</p></div>
+</div>
+<p>Most databases do this by writing every change to a log on disk before they confirm it, often called a write-ahead log. After a crash, the database replays that log to put everything back as it was.</p>
 
-			<h2>2. Consistency: Follow the Rules</h2>
-			<h3>✅ Scenario A: Age-Restricted Purchase</h3>
-			<p>An online liquor store requires buyers to be 21+. If a 19-year-old tries to order, the database rejects
-				the transaction, maintaining consistency with business rules.</p>
+<h2 id="relaxed">When ACID is relaxed</h2>
+<p>Not every system offers all four promises in full. Some NoSQL and large distributed databases trade strict guarantees for speed and the ability to scale, and instead settle for "eventual consistency", where copies of the data agree after a short delay. That is a design choice and not a flaw, but it is worth knowing which kind of system you are reading from before you trust a number to the last decimal.</p>
 
-			<h3>❌ Scenario B: Overdraft Without Limits</h3>
-			<p>If a bank didn't enforce consistency, you could withdraw more money than you have, leading to negative
-				balances
-				without penalties.<strong>Consistency ensures databases always follow predefined rules, keeping data
-					valid before and after transactions.</strong></p>
+<div class="callout" id="final">
+  <h2>Final thoughts</h2>
+  <p>ACID is a big part of what makes a database reliable. Atomicity stops half-finished work, consistency keeps the data valid, isolation keeps simultaneous users from tripping over each other, and durability means saved stays saved.</p>
+  <p>Next time you pay for something online, think of the few lines of work going on behind the scenes to make sure your money, your order and your receipt all agree.</p>
+</div>
 
-			<h2>3. Isolation: No Transaction Interference</h2>
-			<h3>✅ Scenario A: Two Sellers, One Product</h3>
-			<p>An online marketplace has <strong>only one PS5 left</strong>. Two sellers try to mark it as sold at the
-				same time. <strong>Isolation</strong> ensures only <strong>one</strong> succeeds, preventing
-				double-selling.</p>
+        </div>
+        <div class="prevnext"><a class="prev" href="AB_Testing.html"><small>&larr; Previous</small><span>A/B testing</span></a><a class="next" href="../Journals.html"><small>Back &rarr;</small><span>All journals</span></a></div>
+      </div>
+    </div>
+  </article>
+</main>
 
-			<h3>❌ Scenario B: Double Booking in a Hotel</h3>
-			<p>Without isolation, two travel agents could book the <strong>same hotel room</strong> for different
-				guests, leading to an
-				embarrassing overbooking situation.<em>Isolation keeps transactions <strong>independent</strong>, so
-					concurrent actions don't corrupt data.</em></p>
+<section class="contact" id="contact">
+  <div class="wrap" style="max-width:1040px">
+    <div>
+      <h2>Let's talk</h2>
+      <p>I am open to data analyst roles and projects. The quickest way to reach me is email.</p>
+      <div class="rows">
+        <a href="mailto:benson.kimani.mukuria@gmail.com">benson.kimani.mukuria@gmail.com</a>
+        <a href="tel:+254796436966">+254 796436966</a>
+      </div>
+    </div>
+    <div class="actions">
+      <a class="btn solid" href="mailto:benson.kimani.mukuria@gmail.com">Email me</a>
+      <a class="btn ghost" href="../assets/BENSON%20KIMANI%20MUKURIA.pdf" target="_blank" rel="noopener">Download resume</a>
+      <a class="btn ghost" href="https://www.linkedin.com/in/benson-kimani-mukuria" target="_blank" rel="noopener">LinkedIn</a>
+    </div>
+  </div>
+</section>
 
-			<h2>4. Durability: Surviving the Crash</h2>
-			<h3>✅ Scenario A: Power Outage During Payment</h3>
-			<p>You confirm an order, but the system crashes before showing the receipt. <strong>Durability</strong>
-				ensures the transaction
-				is <strong>saved permanently</strong>, so your order isn't lost.</p>
+<footer><div class="wrap" style="max-width:1040px">&copy; Benson Kimani</div></footer>
 
-			<h3>❌ Scenario B: Lost Game Progress</h3>
-			<p>Imagine playing a game where your progress isn't saved after a crash—frustrating, right? Without
-				durability,
-				databases could lose committed transactions.<strong>Durability guarantees that once a transaction is
-					committed, it stays committed—even if the system fails.</strong></p>
-
-			<div class="highlight">
-				<h2>Final Thoughts</h2>
-				<p>ACID principles are the backbone of <strong>reliable databases</strong>. Whether you're handling
-					payments, inventory,
-					or user data, ensuring <strong>Atomicity, Consistency, Isolation, and Durability</strong> prevents
-					errors, corruption,
-					and chaos.Next time you make an online purchase, you should probabbly be thinking about how ACID keeps your transactions safe!
-				</p>
-			</div>
-		</div>
-
-		<!-- Copyright -->
-		<div id="copyright">
-			<ul>
-				<li>&copy; Benson Kimani</li>
-			</ul>
-		</div>
-	</div>
-
-	<!-- Scripts -->
-	<script src="assets/js/jquery.min.js"></script>
-	<script src="assets/js/jquery.scrollex.min.js"></script>
-	<script src="assets/js/jquery.scrolly.min.js"></script>
-	<script src="assets/js/browser.min.js"></script>
-	<script src="assets/js/breakpoints.min.js"></script>
-	<script src="assets/js/util.js"></script>
-	<script src="assets/js/main.js"></script>
 </body>
-
 </html>
