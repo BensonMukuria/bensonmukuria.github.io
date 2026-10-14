@@ -1,219 +1,342 @@
-<!DOCTYPE HTML>
-<html>
-
+<!DOCTYPE html>
+<html lang="en">
 <head>
-	<title>Benson Kimani portfolio</title>
-	<meta charset="utf-8" />
-	<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
-	<link rel="stylesheet" href="../assets/css/main.css" />
-	<noscript>
-		<link rel="stylesheet" href="../assets/css/noscript.css" />
-	</noscript>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>A/B Testing | Benson Kimani Mukuria</title>
+<meta name="description" content="A plain-language walkthrough of an A/B test, using a free trial for a subscription product as the example, with the statistics and the common mistakes.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,500;8..60,600;8..60,700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1e2321; --ink-soft:#4b534e; --paper:#eeece4; --panel:#fdfcf9;
+    --clay:#b9793a; --clay-dark:#8f5a25; --sage:#5f6f5a; --line:#d9d5c9; --line-soft:#e4e1d6;
+    --serif:"Source Serif 4",Georgia,serif; --sans:"IBM Plex Sans",-apple-system,"Segoe UI",sans-serif;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth;scroll-padding-top:72px}
+  body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--sans);line-height:1.65;font-variant-numeric:tabular-nums}
+  a{color:inherit}
+  a:focus-visible,.btn:focus-visible{outline:2px solid var(--sage);outline-offset:3px}
+  .wrap{max-width:1040px;margin:0 auto;padding-inline:24px}
+
+  /* top bar */
+  .topbar{position:sticky;top:0;z-index:20;background:rgba(238,236,228,.94);backdrop-filter:blur(6px);border-bottom:1px solid var(--line)}
+  .topbar .wrap{display:flex;align-items:center;justify-content:space-between;gap:16px;padding-block:14px}
+  .brand{font-family:var(--serif);font-weight:600;font-size:1.05rem;text-decoration:none}
+  .topbar nav{display:flex;align-items:center;gap:22px;font-size:.9rem;font-weight:500}
+  .topbar nav a{text-decoration:none;color:var(--ink-soft)}
+  .topbar nav a:hover{color:var(--ink)}
+  .topbar nav a.pill{color:var(--paper);background:var(--ink);padding:7px 16px;border-radius:999px;font-weight:600}
+  .topbar nav a.pill:hover{background:var(--clay-dark);color:#fff}
+
+  /* hero */
+  .hero{padding-block:72px 56px}
+  .hero .wrap{display:grid;grid-template-columns:minmax(0,1fr) 190px;gap:48px;align-items:center}
+  .eyebrow{font-size:.78rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--sage);margin:0 0 14px}
+  .hero h1{font-family:var(--serif);font-weight:700;font-size:clamp(2.2rem,5.2vw,3.5rem);line-height:1.08;margin:0 0 18px;text-wrap:balance}
+  .hero h1 em{font-style:normal;color:var(--clay)}
+  .hero p.lead{font-size:1.12rem;color:var(--ink-soft);max-width:54ch;margin:0 0 28px}
+  .actions{display:flex;flex-wrap:wrap;gap:12px}
+  .btn{display:inline-block;text-decoration:none;font-weight:600;font-size:.92rem;padding:12px 22px;border-radius:6px;border:1px solid var(--ink);transition:background .15s,color .15s,border-color .15s}
+  .btn.solid{background:var(--ink);color:var(--paper)}
+  .btn.solid:hover{background:var(--clay-dark);border-color:var(--clay-dark);color:#fff}
+  .btn.ghost{background:transparent;color:var(--ink)}
+  .btn.ghost:hover{background:var(--ink);color:var(--paper)}
+  .portrait{position:relative;width:190px;min-height:190px;border-radius:14px;overflow:hidden;border:1px solid var(--line);background:var(--panel);justify-self:end;box-shadow:0 14px 30px -20px rgba(30,35,33,.5)}
+  .portrait .mono{position:absolute;inset:0;display:grid;place-items:center;font-family:var(--serif);font-weight:600;font-size:3.2rem;color:var(--clay)}
+  .portrait img{position:relative;z-index:1;width:100%;height:auto;display:block}
+
+  /* proof strip */
+  .proof{border-block:1px solid var(--line);background:var(--panel)}
+  .proof .wrap{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:0}
+  .proof .item{padding:22px 20px;border-left:1px solid var(--line-soft)}
+  .proof .item:first-child{border-left:0;padding-left:0}
+  .proof .v{font-family:var(--serif);font-weight:700;font-size:1.9rem;color:var(--clay);line-height:1.1}
+  .proof .k{font-size:.84rem;color:var(--ink-soft);margin-top:4px}
+
+  /* sections */
+  section.block{padding-block:72px 8px}
+  .head{display:flex;align-items:baseline;justify-content:space-between;gap:16px;flex-wrap:wrap;margin:0 0 28px}
+  .head h2{font-family:var(--serif);font-weight:600;font-size:1.7rem;margin:0}
+  .head p{margin:0;color:var(--ink-soft);font-size:.95rem}
+
+  /* project cards */
+  .cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:28px}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:10px;overflow:hidden;display:flex;flex-direction:column;transition:transform .18s,box-shadow .18s}
+  .card:hover{transform:translateY(-3px);box-shadow:0 14px 30px -18px rgba(30,35,33,.45)}
+  .card .shot{display:block;aspect-ratio:16/9;overflow:hidden;border-bottom:1px solid var(--line);background:var(--line-soft)}
+  .card .shot img{width:100%;height:100%;object-fit:cover;object-position:top;display:block}
+  .card .body{padding:22px 24px 24px;display:flex;flex-direction:column;gap:12px;flex:1}
+  .tags{display:flex;flex-wrap:wrap;gap:6px;margin:0;padding:0;list-style:none}
+  .tags li{font-size:.74rem;font-weight:600;letter-spacing:.03em;color:var(--sage);border:1px solid var(--line);border-radius:999px;padding:2px 10px;background:var(--paper)}
+  .card h3{font-family:var(--serif);font-weight:600;font-size:1.35rem;margin:0;line-height:1.25}
+  .card h3 a{text-decoration:none}
+  .card p{margin:0;color:var(--ink-soft);font-size:.96rem}
+  .card .result{color:var(--ink);font-weight:500}
+  .card .links{display:flex;flex-wrap:wrap;gap:18px;margin-top:auto;padding-top:6px;font-size:.92rem;font-weight:600}
+  .card .links a{color:var(--clay-dark);text-decoration:none;border-bottom:1px solid var(--clay)}
+  .card .links a:hover{color:var(--ink);border-color:var(--ink)}
+
+  /* about */
+  .about{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:48px;align-items:start}
+  .about p{margin:0 0 16px;max-width:60ch}
+  .skills{margin:0;padding:0;list-style:none;display:flex;flex-wrap:wrap;gap:10px}
+  .skills li{font-size:.9rem;font-weight:500;background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:7px 14px}
+  .skills-label{font-size:.78rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--sage);margin:0 0 12px}
+
+  /* contact */
+  .contact{margin-top:80px;background:var(--ink);color:var(--paper)}
+  .contact .wrap{padding-block:56px;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:32px;align-items:center}
+  .contact h2{font-family:var(--serif);font-weight:600;font-size:1.8rem;margin:0 0 8px}
+  .contact p{margin:0;color:#c9c8bf;max-width:46ch}
+  .contact .rows{display:flex;flex-direction:column;gap:6px;margin-top:20px;font-size:.95rem}
+  .contact .rows a{color:var(--paper);text-decoration:none;border-bottom:1px solid #5b625d;width:fit-content}
+  .contact .rows a:hover{border-color:var(--clay)}
+  .contact .btn.solid{background:var(--paper);color:var(--ink);border-color:var(--paper)}
+  .contact .btn.solid:hover{background:var(--clay);border-color:var(--clay);color:#fff}
+  .contact .btn.ghost{color:var(--paper);border-color:#7b817c}
+  .contact .btn.ghost:hover{background:var(--paper);color:var(--ink)}
+  .contact .actions{flex-direction:column;align-items:stretch}
+  .contact .actions .btn{text-align:center}
+  footer{background:var(--ink);color:#8d928e;font-size:.82rem;border-top:1px solid #323937}
+  footer .wrap{padding-block:18px}
+
+  @media (max-width:860px){
+    .hero{padding-block:44px 40px}
+    .hero .wrap{grid-template-columns:1fr;gap:28px}
+    .portrait{order:-1;justify-self:start;width:130px;min-height:130px}
+    .portrait .mono{font-size:2rem}
+    .proof .wrap{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .proof .item:nth-child(3){border-left:0;padding-left:0}
+    .proof .item:nth-child(n+3){border-top:1px solid var(--line-soft)}
+    .cards,.about{grid-template-columns:1fr}
+    .about{gap:28px}
+    .contact .wrap{grid-template-columns:1fr}
+    .topbar nav a.hide-sm{display:none}
+  }
+  @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}.card{transition:none}.card:hover{transform:none}}
+
+  /* journal article */
+  .topbar nav a.current{color:var(--ink);border-bottom:2px solid var(--clay);padding-bottom:2px}
+  .art-head{padding-block:60px 12px}
+  .art-head .wrap,.art-body .wrap{max-width:780px}
+  .crumbs{font-size:.85rem;margin:0 0 22px}
+  .crumbs a{color:var(--ink-soft);text-decoration:none;border-bottom:1px solid var(--line)}
+  .crumbs a:hover{color:var(--ink);border-color:var(--ink)}
+  .art-head h1{font-family:var(--serif);font-weight:700;font-size:clamp(2rem,4.8vw,3rem);line-height:1.1;margin:0 0 16px;text-wrap:balance}
+  .art-head h1 em{font-style:normal;color:var(--clay)}
+  .art-head .dek{font-size:1.12rem;color:var(--ink-soft);max-width:60ch;margin:0 0 18px}
+  .art-head .meta{font-size:.84rem;color:var(--ink-soft);margin:0 0 30px}
+  .cover{margin:0 0 8px}
+  .cover img{width:100%;display:block;border:1px solid var(--line);border-radius:8px}
+  .art-body{padding-block:28px 0}
+  .intoc{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:18px 22px;margin:0 0 34px}
+  .intoc b{display:block;font-size:.78rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--sage);margin-bottom:8px}
+  .intoc ol{margin:0;padding-left:20px;columns:2;column-gap:32px;font-size:.92rem}
+  .intoc li{margin:3px 0;break-inside:avoid}
+  .intoc a{text-decoration:none;color:var(--ink-soft)}
+  .intoc a:hover{color:var(--clay-dark);text-decoration:underline}
+  .prose{font-size:1.04rem}
+  .prose h2{font-family:var(--serif);font-weight:600;font-size:1.55rem;line-height:1.25;margin:56px 0 14px;scroll-margin-top:80px;text-wrap:balance}
+  .prose h3{font-family:var(--serif);font-weight:600;font-size:1.15rem;margin:26px 0 8px}
+  .prose p{margin:0 0 16px;max-width:66ch}
+  .prose b,.prose strong{font-weight:600}
+  .prose ul,.prose ol{max-width:66ch;margin:0 0 18px;padding-left:22px}
+  .prose li{margin:6px 0}
+  .prose a{color:var(--clay-dark)}
+  .prose code{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:.88em;background:var(--panel);border:1px solid var(--line-soft);border-radius:4px;padding:1px 5px}
+  pre.code{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:14px 16px;overflow-x:auto;font-size:.84rem;line-height:1.6;margin:0 0 8px;font-family:ui-monospace,Menlo,Consolas,monospace;max-width:100%}
+  .codecap{font-size:.82rem;color:var(--ink-soft);font-style:italic;margin:0 0 20px}
+  .tablewrap{overflow-x:auto;margin:20px 0 14px;max-width:100%}
+  table.data{border-collapse:collapse;width:100%;min-width:480px;font-size:.94rem;background:var(--panel);border:1px solid var(--line)}
+  table.data th,table.data td{padding:10px 14px;text-align:left;border-bottom:1px solid var(--line-soft);vertical-align:top}
+  table.data th{font-size:.78rem;letter-spacing:.08em;text-transform:uppercase;color:var(--sage);background:var(--paper);font-weight:600}
+  table.data td.num,table.data th.num{text-align:right}
+  table.data tr:last-child td{border-bottom:0}
+  .hyp{margin:0 0 18px;display:grid;gap:10px;max-width:66ch}
+  .hyp div{border-left:3px solid var(--sage);padding:2px 0 2px 16px}
+  .hyp dt{font-weight:600;font-size:.9rem}
+  .hyp dd{margin:2px 0 0}
+  .callout{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--clay);border-radius:6px;padding:20px 24px;margin:40px 0 0}
+  .callout h2{margin:0 0 10px;font-size:1.3rem}
+  .callout p:last-child{margin-bottom:0}
+  .pair{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:8px 0 18px}
+  .pair>div{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:16px 18px}
+  .pair .lab{font-size:.74rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase;margin:0 0 6px}
+  .pair .ok .lab{color:var(--sage)}
+  .pair .bad .lab{color:var(--clay-dark)}
+  .pair p{margin:0;font-size:.97rem}
+  .pair h4{font-family:var(--serif);font-size:1.02rem;margin:0 0 6px}
+  .takeaways{counter-reset:t;list-style:none;padding:0;margin:0 0 8px;display:grid;gap:12px;max-width:66ch}
+  .takeaways li{counter-increment:t;display:grid;grid-template-columns:34px 1fr;gap:10px;margin:0}
+  .takeaways li::before{content:counter(t);font-family:var(--serif);font-weight:600;color:var(--sage);font-size:1.1rem;border-bottom:1px solid var(--line);align-self:start;padding-bottom:2px}
+  .prevnext{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-top:56px;padding-top:24px;border-top:1px solid var(--line)}
+  .prevnext a{display:block;text-decoration:none;max-width:48%;min-width:200px}
+  .prevnext small{display:block;font-size:.74rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--sage)}
+  .prevnext span{font-family:var(--serif);font-weight:600;font-size:1.1rem;border-bottom:1px solid var(--clay)}
+  .prevnext a:hover span{color:var(--clay-dark)}
+  .prevnext .next{margin-left:auto;text-align:right}
+  .contact{margin-top:96px}
+  @media (max-width:860px){
+    .art-head{padding-block:36px 8px}
+    .intoc ol{columns:1}
+    .pair{grid-template-columns:1fr}
+    .prevnext a{max-width:100%}
+    .prevnext .next{text-align:left;margin-left:0}
+  }
+</style>
 </head>
+<body>
 
-<body class="is-preload">
+<header class="topbar">
+  <div class="wrap">
+    <a class="brand" href="../index.html">Benson Kimani</a>
+    <nav aria-label="Main">
+      <a class="hide-sm" href="../index.html#projects">Projects</a>
+      <a class="hide-sm" href="../index.html#about">About</a>
+      <a class="hide-sm current" href="../Journals.html" aria-current="page">Journals</a>
+      <a class="hide-sm" href="#contact">Contact</a>
+      <a class="pill" href="../assets/BENSON%20KIMANI%20MUKURIA.pdf" target="_blank" rel="noopener">Resume</a>
+    </nav>
+  </div>
+</header>
 
-	<!-- Wrapper -->
-	<div id="wrapper" class="fade-in">
+<main>
+  <article>
+    <header class="art-head">
+      <div class="wrap">
+        <p class="crumbs"><a href="../Journals.html">&larr; All journals</a></p>
+        <p class="eyebrow">Journal</p>
+        <h1>A/B testing, explained with <em>one simple question</em></h1>
+        <p class="dek">How analysts compare two versions of something and decide which one works, using a free trial for a subscription product as the example.</p>
+        <p class="meta">By Benson Kimani Mukuria &middot; 6 min read</p>
+        <figure class="cover"><img src="../images/AB_Testing.png" alt="A/B testing illustration"></figure>
+      </div>
+    </header>
 
-		<!-- Header -->
-		<header id="header">
-			<a href="AB_Testing.html" class="logo">A/B Testing In Data Analytics</a>
-		</header>
+    <div class="art-body">
+      <div class="wrap">
+        <nav class="intoc" aria-label="In this note"><b>In this note</b><ol><li><a href="#example">The question</a></li><li><a href="#s1">Define the goal</a></li><li><a href="#s2">Make two versions</a></li><li><a href="#s3">Split users and size the test</a></li><li><a href="#s4">Run it</a></li><li><a href="#s5">Read the results</a></li><li><a href="#s6">Rule out chance</a></li><li><a href="#s7">Decide</a></li><li><a href="#s8">Look past the headline</a></li><li><a href="#mistakes">Mistakes to avoid</a></li><li><a href="#takeaways">Key takeaways</a></li></ol></nav>
+        <div class="prose">
 
-		<!-- Nav -->
-		<nav id="nav">
-			<ul class="links">
-				<header id="header">
-					<a href="AB_Testing.html" class="logo">A/B Testing</a>
-				</header>
-				<li class="active"><a href="AB_Testing.html">A/B Testing</a></li>
-			</ul>
-			<ul class="icons">
-				<li><a href="../Journals.html">Back</a></li>
-				<li><a href="../index.html">Home</a></li>
+<p>A/B testing is one of the most useful skills an analyst can have. The idea is simple. You take two versions of something, show each one to a different group of people, and see which version does better. Websites, email campaigns, pricing pages and product features all get tested this way.</p>
+<p>The idea is the easy part. The hard part is running the test so that you can trust the answer. This note follows one example from start to finish, then covers the mistakes that spoil tests most often.</p>
 
-			</ul>
+<h2 id="example">The question: does a free trial lead to more paying customers?</h2>
+<p>Say a company has a free plan and a paid premium plan. The team wants to know whether letting new users try the premium features for 7 days makes more of them end up paying. Every number below is made up for the example, but the steps are the same ones you would follow on a real test.</p>
 
-		</nav>
+<h2 id="s1">Step 1: Define the goal and write the hypothesis</h2>
+<p>Start with one metric you will judge the test by. Here it is the <b>conversion rate</b>: the share of new users who become paying subscribers. Choose it before the test starts, not after you have seen the data.</p>
+<p>Then write two statements the test can settle:</p>
+<dl class="hyp">
+  <div><dt>Null hypothesis (H0)</dt><dd>The free trial makes no difference to the conversion rate.</dd></div>
+  <div><dt>Alternative hypothesis (H1)</dt><dd>The free trial raises the conversion rate.</dd></div>
+</dl>
+<p>From here the whole test asks one thing: is the data strong enough to reject H0?</p>
 
+<h2 id="s2">Step 2: Make two versions</h2>
+<ul>
+  <li><b>Version A, the control:</b> no trial. Users sign up for the free plan and must pay straight away to use premium features.</li>
+  <li><b>Version B, the variant:</b> a 7-day trial of the premium features. When it ends, the user can choose to upgrade.</li>
+</ul>
+<p>Change one thing only. If version B also had a new price or a redesigned sign-up page, you would never know which change did the work.</p>
 
+<h2 id="s3">Step 3: Split users at random and size the test</h2>
+<p>Each new user is assigned to A or B at random, ideally by the system and not by a person. Random assignment is what makes the two groups comparable, so the trial is the only systematic difference between them. In the example there are 5,000 users in each group.</p>
+<p>Decide how many users you need before you start. It depends on how small a difference you want to be able to detect, and small differences need a lot more people. With a baseline conversion rate of 2%, the usual settings (95% confidence, 80% power) and a hoped-for rise to 3%, you need about <b>3,800 users per group</b>. To detect a rise to only 2.5% you would need about <b>13,800 per group</b>. Sample size calculators do this arithmetic for you, and in R the <code>power.prop.test()</code> function does too.</p>
 
+<h2 id="s4">Step 4: Run it, then leave it alone</h2>
+<p>Run the test for the length you planned, 30 days in this example, and try to run it in whole weeks so every day of the week is counted equally. Resist checking the results every morning and stopping the moment B pulls ahead. Early numbers swing a lot, and stopping when they happen to look good is one of the easiest ways to fool yourself.</p>
+<p>While it runs, track upgrades in each group. Also log what trial users do with the premium features. You will want that later to explain the result, not just report it.</p>
 
-		<!-- Main -->
-		<div id="main">
+<h2 id="s5">Step 5: Read the results</h2>
+<p>Here is what the data might look like at the end:</p>
+<div class="tablewrap"><table class="data">
+  <thead><tr><th>Metric</th><th class="num">Group A (no trial)</th><th class="num">Group B (trial)</th></tr></thead>
+  <tbody>
+    <tr><td>Users</td><td class="num">5,000</td><td class="num">5,000</td></tr>
+    <tr><td>Paid conversions</td><td class="num">100</td><td class="num">250</td></tr>
+    <tr><td>Conversion rate</td><td class="num">2%</td><td class="num">5%</td></tr>
+  </tbody>
+</table></div>
+<p>Group B converted at 5% against 2% for group A. That is 3 percentage points higher, or 2.5 times as many paying users. Report both numbers. The absolute gap is what the business will feel in revenue, while the relative lift is the one that sounds more impressive.</p>
 
-			<!-- Posts -->
+<h2 id="s6">Step 6: Check that it is not just chance</h2>
+<p>A gap like this can appear by luck alone, especially with small groups. A significance test tells you how likely a gap this big would be if the trial really did nothing. For two conversion rates, the usual choices are a two-proportion z-test or the equivalent chi-square test.</p>
+<p>On these numbers the z-score is about 8.2 and the p-value is far below 0.001. In R you can get it in one line:</p>
+<pre class="code">prop.test(x = c(250, 100), n = c(5000, 5000))</pre>
+<p class="codecap">Compares the two conversion rates and returns the p-value and a confidence interval</p>
+<p>The common cut-off is a p-value below 0.05, and this result clears it easily. But a p-value only says the difference is probably real. It does not say how big it is. For that, look at the confidence interval: here the true gain is probably between <b>2.3 and 3.7 percentage points</b>. That range is more useful to a manager than a single p-value.</p>
 
-			<div class="image fit">
-				<img src="../images/AB_Testing.png" alt="AB Testing">
-			</div>
+<h2 id="s7">Step 7: Make a decision</h2>
+<p>If the result is significant and the gain is worth having, you can recommend giving the free trial to everyone. Remember the trial has a cost too, because those users are using premium features for free for a week. A good recommendation weighs the extra paying users against that cost.</p>
+<p>If the result is not significant, that does not prove the trial does nothing. It may mean the test was too small to see the effect. Before dropping the idea, you could try:</p>
+<ul>
+  <li>Changing the length of the trial.</li>
+  <li>Adding an incentive to upgrade during the trial.</li>
+  <li>Improving the onboarding so trial users find the premium features sooner.</li>
+</ul>
 
-			<h2>Introduction</h2>
-			<p>As a data analyst, one of the most powerful tools in our toolkit is <b>A/B testing</b>.
-				It’s a method used to compare two versions of something to determine which one
-				performs better. We commonly use this method in testing a <b>new website design, an email campaign, or
-					a product feature</b> in oder to make data-driven decisions. <br>Let’s break it down with a simple
-				scenario.</p>
+<h2 id="s8">Step 8: Look past the headline number</h2>
+<p>The conversion rate answers the main question, but the same data can tell you more:</p>
+<ul>
+  <li><b>Engagement during the trial.</b> Did users who actually used the premium features convert more often? If so, the real lever may be getting people to use those features early, not the trial itself.</li>
+  <li><b>Retention.</b> Do people who convert after a trial stay subscribed as long as people who paid straight away? A trial that wins signups but loses them after two months is not a win.</li>
+  <li><b>Segments.</b> Results can differ between new and returning users, or by country or device. Treat these as ideas for the next test, not as conclusions. The more ways you slice the data, the more likely you are to find a pattern that is only luck.</li>
+</ul>
 
-			<h2>A/B Testing Scenario: Is a Free Trial Worth It for Premium Subscriptions?</h2>
-			<p>As a data analyst, you’re tasked with helping your company decide whether offering
-				a <b>free trial of premium features</b> increases the likelihood of users converting to
-				paid subscriptions. To answer this, you design an A/B test comparing two
-				groups: one with a free trial and one without.</p>
+<h2 id="mistakes">Mistakes that spoil tests</h2>
+<ul>
+  <li><b>Stopping early.</b> Calling the test the first day B looks ahead. Decide the end date up front and keep to it.</li>
+  <li><b>Checking too many metrics.</b> If you look at twenty numbers, one of them will look significant by luck. Pick your main metric before you start.</li>
+  <li><b>Uneven groups.</b> If you planned a 50/50 split and ended up with 5,000 users in one group and 4,300 in the other, something is wrong with how users were assigned. Fix that before trusting any result.</li>
+  <li><b>Odd timing.</b> A test that runs over a holiday, a big sale or an outage may not reflect normal behaviour.</li>
+  <li><b>The novelty effect.</b> People sometimes react to anything new. If the effect fades after a few weeks, a short test will overstate it.</li>
+  <li><b>Changing the goal afterwards.</b> Moving the target after seeing the data is just choosing the answer you like.</li>
+</ul>
 
-			<h2>Step 1: Define the Goal</h2>
-			<p>The primary goal is to <b>increase the conversion rate of free users to paid subscribers</b>.
-				Specifically, you want to determine if offering a free trial of premium features leads
-				to more paid conversions compared to not offering a free trial.So therefore this is where you define the hypothesis you want to test.
-				<br><b>Null Hypothesis (H0):</b>Offering free trial of premium features leads to no increase of paid user </br>
-				<b>Null Hypothesis (H1):</b>Offering free trial of premium features leads to increase of paid user 
+<div class="callout">
+  <h2>Why this matters</h2>
+  <p>Without a test, the question "is the free trial worth it?" turns into an argument between opinions. With one, it becomes a number with a range around it, and the team can decide based on that.</p>
+</div>
 
+<h2 id="takeaways">Key takeaways</h2>
+<ol class="takeaways">
+  <li><span><b>Start with one clear hypothesis</b> and one main metric, chosen before the test begins.</span></li>
+  <li><span><b>Randomise</b> who sees which version, and change only one thing between them.</span></li>
+  <li><span><b>Size the test first.</b> A test that is too small can miss a real effect.</span></li>
+  <li><span><b>Check significance and the size of the effect.</b> The p-value says if it is real, the confidence interval says how much.</span></li>
+  <li><span><b>Look beyond the headline.</b> Engagement and retention tell you whether a win will last.</span></li>
+</ol>
 
-			</p>
+        </div>
+        <div class="prevnext"><a class="prev" href="../Journals.html"><small>&larr; Back</small><span>All journals</span></a><a class="next" href="ACID_Databases.html"><small>Next &rarr;</small><span>ACID in databases</span></a></div>
+      </div>
+    </div>
+  </article>
+</main>
 
-			<h2> 2: Create Two Versions</h2>
-			<ol class="divided">
-				<b>
-					<li>Version A (Control):
-				</b> Users are <b>not offered a free trial.</b> They can sign up for the free version
-				but must pay to access premium features immediately.</li>
-				<b>
-					<li>Version B (Variant):
-				</b> Users are <b>offered a free trial of premium features</b>(which is basically a new feature) for a set period
-				(e.g., 7 days). After the trial ends, they can choose to upgrade to the paid version.</li>
-			</ol>
+<section class="contact" id="contact">
+  <div class="wrap" style="max-width:1040px">
+    <div>
+      <h2>Let's talk</h2>
+      <p>I am open to data analyst roles and projects. The quickest way to reach me is email.</p>
+      <div class="rows">
+        <a href="mailto:benson.kimani.mukuria@gmail.com">benson.kimani.mukuria@gmail.com</a>
+        <a href="tel:+254796436966">+254 796436966</a>
+      </div>
+    </div>
+    <div class="actions">
+      <a class="btn solid" href="mailto:benson.kimani.mukuria@gmail.com">Email me</a>
+      <a class="btn ghost" href="../assets/BENSON%20KIMANI%20MUKURIA.pdf" target="_blank" rel="noopener">Download resume</a>
+      <a class="btn ghost" href="https://www.linkedin.com/in/benson-kimani-mukuria" target="_blank" rel="noopener">LinkedIn</a>
+    </div>
+  </div>
+</section>
 
-
-			<h2>Step 3: Randomly Split Your Users</h2>
-			<p>To ensure the test is unbiased, you randomly divide new users into two equal groups:</p>
-			<ul class="divided">
-				<li><strong>Group A (No Free Trial):</strong> 5,000 users who sign up for the free version without
-					access to premium features.</li>
-				<li><strong>Group B (Free Trial):</strong> 5,000 users who sign up for the free version and get access
-					to premium features for 7 days.</li>
-			</ul>
-
-			<h2>Step 4: Run the Experiment</h2>
-			<p>Let the experiment run for a set period (e.g., 30 days). During this time:</p>
-			<ul>
-				<li>Track how many users in each group <strong>upgrade to the paid version</strong>.</li>
-				<li>Monitor user engagement during the free trial period (for Group B) to see if usage of premium
-					features correlates with conversions.</li>
-			</ul>
-
-			<h2>Step 5: Analyze the Results</h2>
-			<p>After the experiment, you collect and analyze the data. Here’s an example of what the results might look
-				like:</p>
-		<div class="table">
-			<table>
-				<thead>
-					<tr>
-						<th>Metric</th>
-						<th>Group A (No Free Trial)</th>
-						<th>Group B (Free Trial)</th>
-					</tr>
-				</thead>
-				<tbody>
-					<tr>
-						<td>Total Users</td>
-						<td>5,000</td>
-						<td>5,000</td>
-					</tr>
-					<tr>
-						<td>Paid Conversions</td>
-						<td>100</td>
-						<td>250</td>
-					</tr>
-					<tr>
-						<td>Conversion Rate</td>
-						<td>2%</td>
-						<td>5%</td>
-					</tr>
-				</tbody>
-			</table>
-		</div>
-			<p>In this example, <strong>Group B (Free Trial)</strong> has a higher conversion rate (5%) compared to
-				<strong>Group A (No Free Trial)</strong> at 2%.
-			</p>
-
-			<h2>Step 6: Check for Statistical Significance</h2>
-			<p>Before concluding, you need to ensure the results are statistically significant. Use a statistical test
-				like a <strong>chi-square test</strong> or calculate the <strong>p-value</strong> to determine if the
-				difference in conversion rates is likely due to the free trial and not random chance.<br>For example:</br>
-		
-				If the <b>p-value is less than 0.05</b>, the results are statistically significant.
-				You might also calculate the <strong>confidence interval</strong> to estimate the range of the true
-					effect.
-					<br>For the sake of simplicity, I will not dive too much into calculation of P-Value, but you can check for a practical  application of it here.</br>
-				</p>
-
-			<h2>Step 7: Make a Decision</h2>
-			<p>If the results are statistically significant, you can conclude that offering a free trial of premium
-				features <strong>increases paid conversions</strong>. Based on this, you might recommend implementing
-				the free trial feature for all users.
-			<br>However, if the results are not significant, you might explore other strategies to improve conversions,
-				such as:</br></p>
-			<ul>
-				<li>Extending the free trial period.</li>
-				<li>Offering additional incentives during the trial.</li>
-				<li>Improving the onboarding experience for free trial users.</li>
-			</ul>
-
-			<h2>Step 8: Consider Additional Insights</h2>
-			<p>While analyzing the results, you might uncover additional insights:</p>
-			<ul>
-				<li><strong>Engagement During Trial:</strong> Did users who actively used premium features during the
-					trial have a higher likelihood of converting? If so, you could focus on encouraging feature usage
-					during the trial.</li>
-				<li><strong>Retention Rates:</strong> Are users who converted after a free trial more likely to stay
-					subscribed long-term compared to those who converted without a trial? This could indicate the
-					quality of conversions.</li>
-			</ul>
-
-			<div class="highlight">
-				<h2>Why This Test Matters</h2>
-				<p>A/B testing helps you make data-driven decisions about your business strategy. In this case, it
-					answers a critical question: <strong>Is the free trial feature worth the investment?</strong> By
-					testing and validating your assumptions, you can optimize your subscription model and maximize
-					revenue.</p>
-			</div>
-
-			<h2>Key Takeaways</h2>
-			<ol>
-				<li><strong>Clear Hypothesis:</strong> Offering a free trial of premium features will increase paid
-					conversions.</li>
-				<li><strong>Randomization:</strong> Ensure users are randomly assigned to groups to avoid bias.</li>
-				<li><strong>Metrics Matter:</strong> Focus on conversion rates, but also consider engagement and
-					retention.</li>
-				<li><strong>Statistical Rigor:</strong> Always check for statistical significance before drawing
-					conclusions.</li>
-				<li><strong>Iterate and Improve:</strong> Use the insights from the test to refine your strategy
-					further.</li>
-			</ol>
-
-	
-		</div>
-
-		<!-- Copyright -->
-		<div id="copyright">
-			<ul>
-				<li>&copy; Benson Kimani</li>
-				</li>
-			</ul>
-		</div>
-
-	</div>
-
-	<!-- Scripts -->
-	<script src="assets/js/jquery.min.js"></script>
-	<script src="assets/js/jquery.scrollex.min.js"></script>
-	<script src="assets/js/jquery.scrolly.min.js"></script>
-	<script src="assets/js/browser.min.js"></script>
-	<script src="assets/js/breakpoints.min.js"></script>
-	<script src="assets/js/util.js"></script>
-	<script src="assets/js/main.js"></script>
+<footer><div class="wrap" style="max-width:1040px">&copy; Benson Kimani</div></footer>
 
 </body>
-
 </html>
