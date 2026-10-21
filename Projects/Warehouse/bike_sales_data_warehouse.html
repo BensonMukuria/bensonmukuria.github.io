@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<!-- Images used by this page (save them in the images folder, same names):
+images/dw_warehouse_design.png
+images/dw_bronze_bulk_insert.png
+images/dw_silver_row_number.png
+images/dw_silver_lead.png
+images/dw_silver_sales_rule.png
+images/dw_gold_dim_customers.png
+images/dw_gold_fact_sales.png
+images/dw_gold_quality_check.png -->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bike Sales Data Warehouse | Benson Kimani Mukuria</title>
+<meta name="description" content="A SQL Server data warehouse built from CRM and ERP CSV files, with Bronze, Silver and Gold layers and a star schema ready for Power BI.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,500;8..60,600;8..60,700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1e2321; --ink-soft:#4b534e; --paper:#eeece4; --panel:#fdfcf9;
+    --clay:#b9793a; --sage:#5f6f5a; --line:#d9d5c9; --line-soft:#e4e1d6;
+    --serif:"Source Serif 4",Georgia,serif; --sans:"IBM Plex Sans",-apple-system,"Segoe UI",sans-serif;
+    box-sizing:border-box;
+    padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+  }
+  *{box-sizing:border-box}
+  html{scroll-padding-top:14px}
+  body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--sans);line-height:1.65;
+    font-variant-numeric:tabular-nums;}
+  a{color:var(--clay)}
+
+  .topbar{
+    display:flex;align-items:center;justify-content:space-between;gap:12px;
+    padding:16px 28px;border-bottom:1px solid var(--line);background:var(--paper);
+    position:sticky;top:0;z-index:20;
+  }
+  .topbar .mark{font-family:var(--serif);font-weight:600;font-size:1.02rem}
+  .topbar .mark span{color:var(--ink-soft);font-weight:400;font-size:.85rem;margin-left:8px}
+  .topbar a.home{font-size:.85rem;font-weight:500;text-decoration:none;border-bottom:1px solid var(--clay);padding-bottom:1px}
+
+  .layout{display:grid;grid-template-columns:220px minmax(0,1fr);gap:0;max-width:1120px;margin:0 auto}
+  nav.toc{
+    position:sticky;top:57px;align-self:start;padding:40px 18px 40px 28px;
+    font-size:.86rem;height:calc(100vh - 57px);overflow-y:auto;
+  }
+  nav.toc a{display:block;color:var(--ink-soft);text-decoration:none;padding:6px 0;border-left:2px solid transparent;padding-left:12px;margin-left:-13px}
+  nav.toc a:hover{color:var(--ink)}
+  nav.toc a.current{color:var(--sage);border-left-color:var(--sage);font-weight:600}
+  nav.toc .group-label{font-weight:600;color:var(--ink);margin-top:16px}
+  nav.toc .group-label:first-child{margin-top:0}
+  nav.toc .sub{padding-left:22px;margin-left:-13px}
+
+  main{padding:48px 32px 90px;min-width:0;max-width:720px}
+
+  .hero h1{font-family:var(--serif);font-weight:700;font-size:2.5rem;line-height:1.12;margin:0 0 10px}
+  .hero .dek{font-size:1.08rem;color:var(--ink-soft);max-width:540px;margin:0 0 30px}
+  .hero .stat{display:flex;align-items:baseline;gap:14px;border-top:1px solid var(--line);padding-top:20px}
+  .hero .stat .n{font-family:var(--serif);font-weight:700;font-size:2.6rem;color:var(--clay)}
+  .hero .stat .l{font-size:.92rem;color:var(--ink-soft)}
+
+  section{margin-top:64px;scroll-margin-top:72px}
+  section h2{font-family:var(--serif);font-weight:600;font-size:1.5rem;margin:0 0 16px}
+  section p{margin:0 0 16px;max-width:66ch}
+  section p b{font-weight:600;color:var(--ink)}
+
+  .pair{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin:20px 0 8px}
+  .pair figure{margin:0}
+  .pair img{width:100%;display:block;border:1px solid var(--line);border-radius:4px}
+  .pair figcaption{font-size:.8rem;color:var(--ink-soft);margin-top:8px;font-style:italic}
+
+  .finding{border-top:1px solid var(--line);padding-top:36px;margin-top:36px}
+  .finding .num{font-family:var(--serif);color:var(--sage);font-weight:600;font-size:.95rem;margin:0 0 4px}
+  .finding h3{font-family:var(--serif);font-size:1.3rem;font-weight:600;margin:0 0 18px}
+
+  .statrow{display:flex;gap:28px;flex-wrap:wrap;margin:0 0 22px}
+  .statrow .s{min-width:120px}
+  .statrow .s .v{font-size:1.7rem;font-weight:700;color:var(--clay);font-family:var(--serif)}
+  .statrow .s .k{font-size:.8rem;color:var(--ink-soft)}
+
+  .split{display:flex;gap:6px;height:10px;border-radius:5px;overflow:hidden;margin:10px 0 22px;max-width:360px}
+  .split .a{background:var(--clay)}
+  .split .b{background:var(--line)}
+
+  .levels{display:flex;flex-direction:column;gap:8px;max-width:420px;margin:0 0 22px}
+  .levels .row{display:grid;grid-template-columns:70px 1fr 50px;align-items:center;gap:10px;font-size:.85rem}
+  .levels .bar{height:16px;background:var(--line-soft);border-radius:3px;overflow:hidden}
+  .levels .bar i{display:block;height:100%;background:var(--clay)}
+
+  .evidence{margin:22px 0 6px;max-width:420px}
+  .evidence img{width:100%;display:block;border:1px solid var(--line);border-radius:4px}
+  .evidence figcaption{font-size:.78rem;color:var(--ink-soft);margin-top:8px}
+
+  .reco{border-left:3px solid var(--sage);padding:4px 0 4px 18px;margin:0 0 24px}
+  .reco h4{font-family:var(--serif);font-size:1.08rem;font-weight:600;margin:0 0 6px}
+  .reco p{margin:0;max-width:62ch}
+
+  .cta{
+    margin-top:56px;padding:26px 28px;background:var(--panel);border:1px solid var(--line);border-radius:8px;
+    display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap
+  }
+  .cta p{margin:0;font-size:.95rem;max-width:40ch}
+  .cta a{
+    background:var(--ink);color:var(--paper);text-decoration:none;font-weight:600;font-size:.9rem;
+    padding:11px 20px;border-radius:5px;white-space:nowrap
+  }
+
+  footer{padding:30px 32px 60px;color:var(--ink-soft);font-size:.82rem;border-top:1px solid var(--line);margin-top:40px}
+
+  @media (max-width:860px){
+    .layout{grid-template-columns:1fr}
+    nav.toc{display:none}
+    main{padding:34px 20px 70px;max-width:100%}
+    .hero h1{font-size:1.9rem}
+    .pair{grid-template-columns:1fr}
+  }
+
+  .wide{margin:22px 0 6px}
+  .wide img{width:100%;display:block;border:1px solid var(--line);border-radius:4px}
+  .wide figcaption{font-size:.8rem;color:var(--ink-soft);margin-top:8px;font-style:italic}
+  .trio{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin:22px 0 6px}
+  .trio figure{margin:0;min-width:0}
+  .trio img{width:100%;display:block;border:1px solid var(--line);border-radius:4px}
+  .trio figcaption{font-size:.78rem;color:var(--ink-soft);margin-top:8px;font-style:italic}
+  .steps{margin:0 0 20px;padding:0;list-style:none;display:flex;flex-direction:column;gap:12px;max-width:66ch}
+  .steps li{display:grid;grid-template-columns:30px 1fr;gap:12px;align-items:start}
+  .steps .n{font-family:var(--serif);font-weight:600;color:var(--sage);font-size:1.05rem;border-bottom:1px solid var(--line);padding-bottom:2px}
+  .steps b{font-weight:600}
+  pre.code{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:14px 16px;overflow-x:auto;font-size:.82rem;line-height:1.6;margin:0 0 8px;font-family:ui-monospace,Menlo,Consolas,monospace;max-width:100%}
+  .codecap{font-size:.8rem;color:var(--ink-soft);font-style:italic;margin:0 0 20px}
+  .twocol{display:grid;grid-template-columns:minmax(0,420px) minmax(0,1fr);gap:22px;align-items:start;margin:22px 0 6px}
+  .twocol .evidence{margin:0}
+  @media (max-width:860px){.trio{grid-template-columns:1fr}.twocol{grid-template-columns:1fr}}
+
+  .carousel{position:relative;margin:26px 0 6px}
+  .track{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;border:1px solid var(--line);border-radius:4px;background:var(--panel)}
+  .track::-webkit-scrollbar{display:none}
+  .track:focus-visible,.cbtn:focus-visible,.dots button:focus-visible{outline:2px solid var(--sage);outline-offset:2px}
+  .slide{flex:0 0 100%;margin:0;scroll-snap-align:start;min-width:0}
+  .slide img{width:100%;display:block}
+  .slide figcaption{font-size:.82rem;color:var(--ink-soft);padding:10px 14px;border-top:1px solid var(--line);font-style:italic}
+  .cbtn{position:absolute;top:calc(50% - 40px);width:38px;height:38px;border-radius:50%;border:1px solid var(--line);background:var(--paper);color:var(--ink);font-size:1.5rem;line-height:1;cursor:pointer;display:grid;place-items:center;padding:0 0 3px}
+  .cbtn:hover{background:var(--panel)}
+  .cbtn.prev{left:10px}.cbtn.next{right:10px}
+  .dots{display:flex;justify-content:center;gap:10px;margin-top:12px}
+  .dots button{width:9px;height:9px;border-radius:50%;border:0;padding:0;background:var(--line);cursor:pointer}
+  .dots button[aria-current="true"]{background:var(--sage)}
+  .download{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:16px 20px;margin:0 0 22px}
+  .download p{margin:0;font-size:.93rem;max-width:44ch}
+  .download a{background:var(--ink);color:var(--paper);text-decoration:none;font-weight:600;font-size:.88rem;padding:10px 18px;border-radius:5px;white-space:nowrap}
+  .download a:focus-visible{outline:2px solid var(--sage);outline-offset:2px}
+
+  section code,.reco code,.finding code{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:.86em;background:var(--panel);border:1px solid var(--line-soft);border-radius:4px;padding:1px 5px}
+  section ul{max-width:66ch;margin:0 0 18px;padding-left:22px}
+  section li{margin:6px 0}
+  .tablewrap{overflow-x:auto;margin:20px 0 14px;max-width:100%}
+  table.data{border-collapse:collapse;width:100%;min-width:480px;font-size:.92rem;background:var(--panel);border:1px solid var(--line)}
+  table.data th,table.data td{padding:10px 14px;text-align:left;border-bottom:1px solid var(--line-soft);vertical-align:top}
+  table.data th{font-size:.76rem;letter-spacing:.08em;text-transform:uppercase;color:var(--sage);background:var(--paper);font-weight:600}
+  table.data td.num,table.data th.num{text-align:right}
+  table.data tr:last-child td{border-bottom:0}
+  .finding{scroll-margin-top:72px}
+  figure.shot{margin:14px 0 8px}
+  figure.shot img{display:block;max-width:100%;height:auto;border:1px solid var(--line);border-radius:6px;background:var(--panel)}
+  figure.shot.wide{margin:22px 0 10px}
+  .actions{display:flex;flex-wrap:wrap;gap:12px;margin:22px 0 0}
+  .btn{display:inline-block;text-decoration:none;font-weight:600;font-size:.9rem;padding:11px 20px;border-radius:5px;border:1px solid var(--ink)}
+  .btn.solid{background:var(--ink);color:var(--paper)}
+  .btn.ghost{color:var(--ink)}
+  .hero .stat{margin-top:6px}
+  .mtoc{display:none;background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:14px 18px;margin:26px 0 0}
+  .mtoc b{display:block;font-size:.76rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--sage);margin-bottom:6px}
+  .mtoc ol{margin:0;padding-left:0;list-style:none;font-size:.92rem}
+  .mtoc li{margin:3px 0}
+  .mtoc a{color:var(--ink-soft);text-decoration:none}
+  @media (max-width:860px){.mtoc{display:block}}
+
+  .chips{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 26px;padding:0;list-style:none}
+  .chips.tools li{display:inline-flex;align-items:center;gap:7px;padding:5px 13px 5px 10px}
+  .chips.tools svg{color:var(--clay);flex:none}
+  .chips li{font-size:.78rem;font-weight:600;color:var(--sage);border:1px solid var(--line);border-radius:999px;padding:3px 12px;background:var(--panel)}
+  .fig{margin:22px 0 10px;background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:14px;overflow-x:auto}
+  .fig svg{display:block;min-width:660px;width:100%;height:auto}
+  .figcap{font-size:.84rem;color:var(--ink-soft);margin:0 0 24px}
+  .prose ol.flow,.prose ol.stages{max-width:none;padding-left:0}
+  .flow{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:18px 0 8px;padding:0;list-style:none;counter-reset:f}
+  .flow li{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:14px 16px;counter-increment:f}
+  .flow li b{display:block;font-family:var(--serif);font-size:1.05rem;margin-bottom:2px}
+  .flow li b::before{content:counter(f) ". ";color:var(--clay)}
+  .flow li span{font-size:.88rem;color:var(--ink-soft)}
+  .stages{margin:18px 0;display:grid;gap:0;max-width:none;padding:0;list-style:none}
+  .stages li{display:grid;grid-template-columns:34px minmax(0,1fr) auto;gap:12px;align-items:baseline;padding:11px 0;border-bottom:1px solid var(--line-soft);margin:0}
+  .stages li:first-child{border-top:1px solid var(--line-soft)}
+  .stages .n{font-family:var(--serif);font-weight:600;color:var(--sage);font-size:1.1rem}
+  .stages .t{font-weight:600}
+  .stages .t small{display:block;font-weight:400;color:var(--ink-soft);font-size:.9rem}
+  .stages .c{font-size:.8rem;color:var(--ink-soft);white-space:nowrap}
+  .note{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--sage);border-radius:6px;padding:14px 18px;margin:18px 0;font-size:.97rem}
+  .note p{margin:0 0 8px;max-width:none}.note p:last-child{margin:0}
+  .links-row{display:flex;flex-wrap:wrap;gap:12px;margin:0}
+  table.data td code,table.data th code{white-space:nowrap}
+  td.mono,.mono{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:.86em}
+  .tree{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:14px 18px;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:.84rem;line-height:1.7;overflow-x:auto;margin:0 0 18px;white-space:pre}
+  svg text{font-family:"IBM Plex Sans",sans-serif}
+  svg .ser{font-family:"Source Serif 4",Georgia,serif}
+  @media (max-width:860px){.flow{grid-template-columns:1fr 1fr}.stages li{grid-template-columns:28px 1fr}.stages .c{grid-column:2}}
+  @media (max-width:520px){.flow{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <div class="mark">Bike Sales Data Warehouse <span>Benson Kimani</span></div>
+  <a class="home" href="../index.html">Home</a>
+</div>
+<div class="layout">
+<nav class="toc" id="toc" aria-label="Contents"><a href="#intro" class="current">Introduction</a><a href="#brief">The brief</a><a href="#sources">What I started with</a><a href="#architecture">The architecture</a><a href="#plan">Planning and tools</a><a href="#naming">Naming conventions</a><a href="#build">Building the layers</a><a href="#bronze" class="sub">1. Bronze</a><a href="#silver" class="sub">2. Silver</a><a href="#gold" class="sub">3. Gold</a><a href="#quality">Testing the model</a><a href="#repo">The repository</a><a href="#limits">What I would improve</a><a href="#next">What comes next</a></nav>
+<main>
+  <div class="hero">
+    <h1>Bike Sales Data Warehouse: From CRM and ERP to Power BI</h1>
+    <p class="dek">A SQL Server warehouse built from scratch. Two source systems, six raw CSV files, three layers and a star schema ready for reporting.</p>
+    <ul class="chips"><li><span>SQL Server</span></li><li><span>T-SQL</span></li><li><span>SSMS</span></li><li><span>Medallion architecture</span></li><li><span>Star schema</span></li><li><span>Draw.io</span></li><li><span>Notion</span></li><li><span>GitHub</span></li></ul>
+    <div class="stat"><span class="n">60,398</span><span class="l">sales lines from two systems, integrated into one star schema</span></div>
+    <div class="actions"><a class="btn solid" href="https://github.com/bensonmukuria/Bike_Sales_Data_Warehouse_Project" target="_blank" rel="noopener">View on GitHub</a><a class="btn ghost" href="#architecture">See the architecture</a></div>
+    <nav class="mtoc" aria-label="Contents"><b>Contents</b><ol><li><a href="#intro">Introduction</a></li><li><a href="#brief">The brief</a></li><li><a href="#sources">What I started with</a></li><li><a href="#architecture">The architecture</a></li><li><a href="#plan">Planning and tools</a></li><li><a href="#naming">Naming conventions</a></li><li><a href="#build">Building the layers</a></li><li><a href="#bronze">1. Bronze</a></li><li><a href="#silver">2. Silver</a></li><li><a href="#gold">3. Gold</a></li><li><a href="#quality">Testing the model</a></li><li><a href="#repo">The repository</a></li><li><a href="#limits">What I would improve</a></li><li><a href="#next">What comes next</a></li></ol></nav>
+  </div>
+  <section id="intro"><h2>Introduction</h2>
+<p>A lot of the work behind a dashboard happens long before the first chart. In this project I built that part myself: a SQL Server data warehouse for a company that sells bikes and bike accessories, starting from nothing but a pile of CSV files.</p>
+<p>The company keeps its data in two systems. The CRM knows who the customers are, which products exist and what was sold. The ERP adds birth dates, genders, countries and the product category catalogue. Neither one can answer a business question alone, and neither is clean. My job was to bring them together into one trustworthy model that a tool like Power BI can read without anyone needing to know where a column came from.</p>
+
+</section><section id="brief"><h2>The brief</h2>
+<p>The requirements were short and clear, so I turned each one into something I could check at the end.</p>
+<div class="tablewrap"><table class="data">
+<thead><tr><th>Requirement</th><th>What it asked for</th><th>How I met it</th></tr></thead>
+<tbody>
+<tr><td><b>Objective</b></td><td>A modern SQL Server warehouse that consolidates sales data for reporting and decisions</td><td>A three-layer warehouse in one SQL Server database</td></tr>
+<tr><td><b>Data sources</b></td><td>Import ERP and CRM data supplied as CSV files</td><td>Six CSV files loaded with <code>BULK INSERT</code></td></tr>
+<tr><td><b>Data quality</b></td><td>Cleanse and fix quality issues before analysis</td><td>A dedicated Silver layer, with SQL test scripts</td></tr>
+<tr><td><b>Integration</b></td><td>One user-friendly model built for analytical queries</td><td>A star schema in the Gold layer</td></tr>
+<tr><td><b>Scope</b></td><td>Latest data only, no history tracking</td><td>Full refresh on every load, current product versions only</td></tr>
+<tr><td><b>Documentation</b></td><td>Clear documentation of the data model</td><td>Architecture, flow and integration diagrams, naming conventions, a written report per layer</td></tr>
+</tbody></table></div>
+
+</section><section id="sources"><h2>What I started with</h2>
+<p>Three files came from the CRM and three from the ERP. The row counts below come from profiling the files themselves.</p>
+<div class="tablewrap"><table class="data">
+<thead><tr><th>File</th><th>System</th><th class="num">Rows</th><th>What it holds</th></tr></thead>
+<tbody>
+<tr><td><code>cust_info.csv</code></td><td>CRM</td><td class="num">18,494</td><td>Customer ID, key, names, marital status, gender, create date</td></tr>
+<tr><td><code>prd_info.csv</code></td><td>CRM</td><td class="num">397</td><td>Product versions: key, name, cost, product line, start and end dates (295 distinct products)</td></tr>
+<tr><td><code>sales_details.csv</code></td><td>CRM</td><td class="num">60,398</td><td>Order lines: order number, product key, customer ID, three dates, sales, quantity, price (27,659 orders)</td></tr>
+<tr><td><code>CUST_AZ12.csv</code></td><td>ERP</td><td class="num">18,484</td><td>Customer ID, birth date, gender</td></tr>
+<tr><td><code>loc.csv</code></td><td>ERP</td><td class="num">18,484</td><td>Customer ID and country</td></tr>
+<tr><td><code>PX_CAT_G1V2.csv</code></td><td>ERP</td><td class="num">37</td><td>Category, subcategory and whether the product needs maintenance</td></tr>
+</tbody></table></div>
+<p>The tables connect through a handful of keys, and mapping them early made every later step easier. Customers join across systems on the customer key (<code>cst_key</code> in the CRM, <code>cid</code> in the ERP). Sales join to customers on the customer ID and to products on the product key. Products reach the ERP catalogue through a category ID that is hidden in the first five characters of the CRM product key.</p>
+
+</section><section id="architecture"><h2>The architecture</h2>
+<p>I chose the Medallion approach: Bronze, Silver, Gold. Each layer has one job, which keeps the logic easy to find and easy to test.</p>
+<figure class="shot wide"><img loading="lazy" src="../images/dw_warehouse_design.png" alt="Warehouse design: CRM and ERP CSV files load into Bronze, then Silver, then Gold, which serve BI reporting, ad-hoc SQL and machine learning"></figure>
+<p class="figcap">The warehouse design I drew in Draw.io. Bronze and Silver are physical tables loaded by stored procedures. Gold is a set of views.</p>
+<div class="tablewrap"><table class="data">
+<thead><tr><th>Layer</th><th>Job</th><th>Object type</th><th>Load</th><th>Transformation</th></tr></thead>
+<tbody>
+<tr><td><b>Bronze</b></td><td>Keep the source data exactly as it arrived</td><td>Tables</td><td>Batch, full load, truncate and insert</td><td>None</td></tr>
+<tr><td><b>Silver</b></td><td>Clean and standardise</td><td>Tables</td><td>Batch, full load, truncate and insert</td><td>Cleansing, standardisation, normalisation, derived columns, enrichment</td></tr>
+<tr><td><b>Gold</b></td><td>Present business-ready data</td><td>Views</td><td>None, queried live</td><td>Integration, business logic</td></tr>
+</tbody></table></div>
+<p>Keeping Bronze untouched means I can always go back to what the source really said. When something looks wrong in a report, I can trace it down through the layers instead of guessing.</p>
+
+</section><section id="plan"><h2>How I planned and tracked it</h2>
+<p>The project moved through four tools, each used for the job it does best.</p>
+<ol class="flow">
+<li><b>Notion</b><span>Work plan: 6 stages and 25 tasks</span></li>
+<li><b>Draw.io</b><span>Architecture, data flow and integration diagrams</span></li>
+<li><b>SQL Server Management Studio</b><span>All the T-SQL: tables, procedures, views and tests</span></li>
+<li><b>GitHub</b><span>Every finished piece committed to the repository</span></li>
+</ol>
+<p>The Notion plan is the part I would copy into any future project. Each stage has the same rhythm: understand the data, write the code, test it, draw it, commit it.</p>
+<ol class="stages">
+<li><span class="n">1</span><span class="t">Gathering requirements<small>Analyse and understand what the warehouse has to do</small></span><span class="c">1 task</span></li>
+<li><span class="n">2</span><span class="t">Designing the data architecture<small>Choose the approach, design the layers, draw it in Draw.io</small></span><span class="c">3 tasks</span></li>
+<li><span class="n">3</span><span class="t">Project initialisation<small>Detailed tasks, naming conventions, database and schemas, Git repository</small></span><span class="c">4 tasks</span></li>
+<li><span class="n">4</span><span class="t">Build the Bronze layer<small>Analyse the sources, code the ingestion, check completeness, document, commit</small></span><span class="c">5 tasks</span></li>
+<li><span class="n">5</span><span class="t">Build the Silver layer<small>Understand the data, cleanse it, test it, draw the integration model, commit</small></span><span class="c">6 tasks</span></li>
+<li><span class="n">6</span><span class="t">Build the Gold layer<small>Explore business objects, integrate, model the star schema, add a data catalogue, check, commit</small></span><span class="c">6 tasks</span></li>
+</ol>
+
+</section><section id="naming"><h2>Naming conventions</h2>
+<p>Before writing any SQL I agreed a set of naming rules and wrote them down. It is a small step that saves a lot of confusion once there are dozens of objects.</p>
+<div class="tablewrap"><table class="data">
+<thead><tr><th>Object</th><th>Rule</th><th>Example</th></tr></thead>
+<tbody>
+<tr><td>General</td><td>snake_case, lowercase, English, no reserved words</td><td class="mono">customer_key</td></tr>
+<tr><td>Bronze and Silver tables</td><td><code>&lt;source&gt;_&lt;entity&gt;</code>, keeping the source table name</td><td class="mono">crm_cust_info</td></tr>
+<tr><td>Gold tables</td><td><code>&lt;category&gt;_&lt;entity&gt;</code> with a business name</td><td class="mono">dim_customers, fact_sales</td></tr>
+<tr><td>Surrogate keys</td><td><code>&lt;table&gt;_key</code></td><td class="mono">product_key</td></tr>
+<tr><td>Technical columns</td><td>Prefix <code>dwh_</code></td><td class="mono">dwh_create_date</td></tr>
+<tr><td>Load procedures</td><td><code>load_&lt;layer&gt;</code></td><td class="mono">bronze.load_bronze</td></tr>
+</tbody></table></div>
+
+</section><section id="build"><h2>Building the layers</h2><p>Each layer got the same treatment: understand the data, write the code, test it, document it, commit it. Here they are in the order I built them.</p><div class="finding" id="bronze"><p class="num">Layer 1</p><h3>Bronze: land the raw data</h3>
+<p>Bronze has one table for each CSV file, with the same columns as the source. The <code>bronze.load_bronze</code> procedure empties each table and bulk loads the file again, so every run is a clean full refresh.</p>
+<figure class="shot"><img loading="lazy" src="../images/dw_bronze_bulk_insert.png" alt="SQL: TRUNCATE TABLE and BULK INSERT loading cust_info.csv into bronze.crm_cust_info"></figure>
+<p class="codecap">The pattern repeated for all six files. The file path is a placeholder here.</p>
+<p>The procedure also prints a message for each table and the load time in seconds, and wraps the whole thing in <code>TRY...CATCH</code>, so a failed load shows up with an error message instead of passing quietly.</p>
+
+</div><div class="finding" id="silver"><p class="num">Layer 2</p><h3>Silver: clean and standardise</h3>
+<p>This is where most of the effort went. Before writing a single transformation I profiled every table, then wrote a fix for each problem I found. The counts below come from profiling the source files with the same rules the SQL uses.</p>
+<div class="tablewrap"><table class="data">
+<thead><tr><th>Table</th><th>What was wrong</th><th>What I did</th></tr></thead>
+<tbody>
+<tr><td><b>CRM customers</b></td><td>5 customer IDs appear more than once (6 extra rows). 4 rows have no ID at all.</td><td>Drop rows with no ID. Keep the latest record per customer, ranked by create date.</td></tr>
+<tr><td></td><td>Stray spaces around 17 first names and 22 last names</td><td><code>TRIM</code></td></tr>
+<tr><td></td><td>Gender and marital status stored as single letters (and 4,578 blank genders)</td><td>Mapped to Male, Female, Single, Married. Anything unknown becomes <code>n/a</code>.</td></tr>
+<tr><td><b>CRM products</b></td><td>397 rows for 295 products, because each price change is a new version. The category ID is buried in the product key.</td><td>Split the key into a category ID and a product key. Calculate each version's end date with <code>LEAD()</code>.</td></tr>
+<tr><td></td><td>Product line stored as a letter. 2 products with no cost.</td><td>R, M, T, S mapped to Road, Mountain, Touring, Other Sales. Missing cost set to 0.</td></tr>
+<tr><td><b>CRM sales</b></td><td>Dates stored as whole numbers like <code>20201229</code>. 17 order dates are invalid (zero or the wrong length).</td><td>Invalid values become <code>NULL</code>. The rest are converted to real dates.</td></tr>
+<tr><td></td><td>30 rows where sales is missing, not positive, or does not equal quantity times price. 12 rows with a missing or non-positive price.</td><td>Sales recalculated as quantity times price. A bad price is derived from sales divided by quantity.</td></tr>
+<tr><td><b>ERP customers</b></td><td>11,042 customer IDs carry an extra <code>NAS</code> prefix. 16 birth dates are in the future.</td><td>Strip the prefix so IDs match the CRM. Future birth dates become <code>NULL</code>.</td></tr>
+<tr><td></td><td>Gender written as Male, Female, M, F, or blank</td><td>Standardised to Male, Female, <code>n/a</code></td></tr>
+<tr><td><b>ERP location</b></td><td>IDs contain a hyphen (<code>AW-00011000</code>). Countries appear as DE, US and USA next to full names. About 340 are blank.</td><td>Remove the hyphen. Map DE and US to full names. Blanks become <code>n/a</code>.</td></tr>
+<tr><td><b>ERP categories</b></td><td>Already tidy</td><td>Loaded as it arrived</td></tr>
+</tbody></table></div>
+<p>Three techniques did most of the heavy lifting. <code>ROW_NUMBER()</code> picks one survivor when a customer appears more than once:</p>
+<figure class="shot"><img loading="lazy" src="../images/dw_silver_row_number.png" alt="SQL: ROW_NUMBER keeps the latest record per customer"></figure>
+<p><code>LEAD()</code> turns a list of product start dates into proper validity windows, so every version knows when it stopped being current:</p>
+<figure class="shot"><img loading="lazy" src="../images/dw_silver_lead.png" alt="SQL: LEAD calculates each product version end date"></figure>
+<p>And a plain business rule keeps the sales figures honest: the amount should always equal quantity times price.</p>
+<figure class="shot"><img loading="lazy" src="../images/dw_silver_sales_rule.png" alt="SQL: CASE recalculates sales as quantity times price"></figure>
+<p>Every Silver table also gets a <code>dwh_create_date</code> column, filled automatically, so I can always see when a row was loaded. The load procedure follows the same pattern as Bronze: truncate, insert, time it, catch errors.</p>
+<p>I wrote a test script for this layer too. It checks for duplicate or empty keys, leftover spaces, unexpected category values, start dates that fall after end dates, order dates that fall after ship dates, sales that do not match quantity times price, and birth dates outside a believable range. Each query is written so that it should return nothing when the data is clean.</p>
+
+</div><div class="finding" id="gold"><p class="num">Layer 3</p><h3>Gold: a model people can use</h3>
+<p>Gold is where the two systems finally become one. I explored the six tables, grouped them into three business objects (customers, products, sales) and shaped them as a star schema, because it is easy for reporting tools to read and fast to filter.</p>
+<div class="fig"><svg viewBox="0 0 900 400" role="img" aria-label="Star schema: fact_sales in the centre linked to dim_customers and dim_products by surrogate keys">
+<defs><marker id="ar2" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto"><path d="M0,0 L9,4.5 L0,9 z" fill="#4b534e"/></marker></defs>
+<g font-size="13" fill="#1e2321">
+<rect x="10" y="30" width="250" height="340" rx="8" fill="#fdfcf9" stroke="#5f6f5a" stroke-width="1.5"/>
+<rect x="10" y="30" width="250" height="38" rx="8" fill="#5f6f5a"/><text x="135" y="55" text-anchor="middle" font-weight="600" fill="#fff">gold.dim_customers</text>
+<g font-size="12.5"><text x="26" y="92" font-weight="600">customer_key</text><text x="244" y="92" text-anchor="end" fill="#8f5a25" font-size="11">surrogate key</text>
+<text x="26" y="118">customer_id</text><text x="26" y="144">customer_number</text><text x="26" y="170">first_name</text><text x="26" y="196">last_name</text><text x="26" y="222">country</text><text x="26" y="248">marital_status</text><text x="26" y="274">gender</text><text x="26" y="300">birthdate</text><text x="26" y="326">create_date</text></g>
+<rect x="640" y="30" width="250" height="340" rx="8" fill="#fdfcf9" stroke="#5f6f5a" stroke-width="1.5"/>
+<rect x="640" y="30" width="250" height="38" rx="8" fill="#5f6f5a"/><text x="765" y="55" text-anchor="middle" font-weight="600" fill="#fff">gold.dim_products</text>
+<g font-size="12.5"><text x="656" y="92" font-weight="600">product_key</text><text x="874" y="92" text-anchor="end" fill="#8f5a25" font-size="11">surrogate key</text>
+<text x="656" y="118">product_id</text><text x="656" y="144">product_number</text><text x="656" y="170">product_name</text><text x="656" y="196">category_id</text><text x="656" y="222">category</text><text x="656" y="248">subcategory</text><text x="656" y="274">maintenance</text><text x="656" y="300">cost</text><text x="656" y="326">product_line</text><text x="656" y="352">start_date</text></g>
+<rect x="335" y="80" width="230" height="250" rx="8" fill="#fdfcf9" stroke="#b9793a" stroke-width="1.5"/>
+<rect x="335" y="80" width="230" height="38" rx="8" fill="#b9793a"/><text x="450" y="105" text-anchor="middle" font-weight="600" fill="#fff">gold.fact_sales</text>
+<g font-size="12.5"><text x="351" y="142" font-weight="600">customer_key</text><text x="549" y="142" text-anchor="end" fill="#8f5a25" font-size="11">FK</text>
+<text x="351" y="168" font-weight="600">product_key</text><text x="549" y="168" text-anchor="end" fill="#8f5a25" font-size="11">FK</text>
+<text x="351" y="194">order_number</text><text x="351" y="220">order_date</text><text x="351" y="246">shipping_date</text><text x="351" y="272">due_date</text><text x="351" y="298">sales_amount, quantity, price</text></g>
+</g>
+<g stroke="#4b534e" stroke-width="1.6" marker-end="url(#ar2)"><path d="M335 138 H264"/><path d="M565 164 H636"/></g>
+<text x="300" y="130" text-anchor="middle" font-size="11" fill="#4b534e">many to one</text>
+<text x="600" y="156" text-anchor="middle" font-size="11" fill="#4b534e">many to one</text>
+</svg></div>
+<p class="figcap">The star schema. Sales sit in the centre, described by a customer dimension and a product dimension.</p>
+<p>The customer dimension joins three Silver tables. The CRM is the master record, and the ERP only fills the gaps:</p>
+<figure class="shot"><img loading="lazy" src="../images/dw_gold_dim_customers.png" alt="SQL: CREATE VIEW gold.dim_customers"></figure>
+<p>A few decisions are worth explaining, because they are the kind of thing someone could argue either way:</p>
+<ul>
+<li><b>CRM wins for gender.</b> When the two systems disagreed, I treated the CRM as the master and used the ERP only when the CRM had no usable value. Still missing after that means <code>n/a</code>.</li>
+<li><b>Left joins everywhere.</b> A customer or sale should never disappear because a supporting row is missing. If something does not match, I want to see it, not lose it.</li>
+<li><b>Surrogate keys.</b> The dimensions get their own <code>customer_key</code> and <code>product_key</code>, so reports do not depend on source system IDs.</li>
+<li><b>Current products only.</b> The product dimension keeps only the latest version of each product (<code>prd_end_dt IS NULL</code>), which gives one row per product. That matches the brief, which says history is not needed.</li>
+<li><b>Friendly names.</b> <code>cst_firstname</code> becomes <code>first_name</code>, <code>sls_sales</code> becomes <code>sales_amount</code>. An analyst should not need a decoder ring.</li>
+</ul>
+<p>The fact view then swaps the source IDs for the new surrogate keys:</p>
+<figure class="shot"><img loading="lazy" src="../images/dw_gold_fact_sales.png" alt="SQL: CREATE VIEW gold.fact_sales"></figure>
+<div class="tablewrap"><table class="data">
+<thead><tr><th>Gold view</th><th>Built from</th><th>One row per</th></tr></thead>
+<tbody>
+<tr><td><code>gold.dim_customers</code></td><td><span class="mono">silver.crm_cust_info, erp_cust_az12, erp_loc</span></td><td>Customer</td></tr>
+<tr><td><code>gold.dim_products</code></td><td><span class="mono">silver.crm_prd_info, erp_px_cat_g1v2</span></td><td>Current product</td></tr>
+<tr><td><code>gold.fact_sales</code></td><td><span class="mono">silver.crm_sales_details</span> plus both dimensions</td><td>Order line</td></tr>
+</tbody></table></div>
+
+</div></section><section id="quality"><h2>Testing the model</h2>
+<p>Gold has its own test script. It checks that the surrogate keys are unique, and that every row in the fact view can find both its customer and its product.</p>
+<figure class="shot"><img loading="lazy" src="../images/dw_gold_quality_check.png" alt="SQL: check that every sales row finds its customer and product"></figure>
+<p>I ran these in SSMS while building each view, and the results came back as expected: no duplicate keys and no orphaned sales. These are checks I ran by hand and not an automated pipeline, which is worth saying plainly.</p>
+
+</section><section id="repo"><h2>The repository</h2>
+<p>Everything is committed to GitHub, so anyone can rebuild the warehouse from the scripts and the sample files.</p>
+<div class="tree">Bike_Sales_Data_Warehouse_Project/
+├── datasets/
+│   ├── CRM/   cust_info.csv, prd_info.csv, sales_details.csv
+│   └── ERP/   CUST_AZ12.csv, loc.csv, PX_CAT_G1V2.csv
+├── scripts/
+│   ├── create_db_and_schemas.sql
+│   ├── Bronze/   DDL_Bronze.SQL, stored_procedure_load_bronze.sql
+│   ├── Silver/   DDL_Silver.SQL, stored_procedure_load_silver.sql
+│   └── Gold/     views for dim_customers, dim_products, fact_sales
+├── tests/        quality_checks_silver, quality_checks_gold
+└── documents/</div>
+<div class="links-row"><a class="btn solid" href="https://github.com/bensonmukuria/Bike_Sales_Data_Warehouse_Project" target="_blank" rel="noopener">View the repository</a></div>
+
+</section><section id="limits"><h2>What I would improve</h2>
+<p>A finished project is not the same as a perfect one. These are the things I know about and would tackle next.</p>
+<div class="reco"><h4>Loads are not all or nothing</h4><p>Truncating a table and then inserting means that if a load fails halfway, the table is left empty or partial. Wrapping each load in a transaction, or loading into a staging table and swapping it in, would fix that.</p></div><div class="reco"><h4>Surrogate keys can shift</h4><p><code>ROW_NUMBER()</code> inside a view renumbers rows whenever the data changes. That is fine for this refresh-everything design, but a real system with stored history would need persisted keys.</p></div><div class="reco"><h4>One product category has no match</h4><p>Seven product rows carry category ID <code>CO_PE</code>, which does not exist in the ERP catalogue, so their category and subcategory come through empty. I would raise that with the data owner.</p></div><div class="reco"><h4>No run log</h4><p>The procedures print timings, but nothing records row counts or results over time. An audit table would make each load easy to verify.</p></div><div class="reco"><h4>Source-of-truth rules cover gender only</h4><p>If the CRM and ERP disagreed on other fields, I would need documented rules for those as well.</p></div><div class="reco"><h4>Hard-coded file paths</h4><p>The loader points at folders on my own machine, so it needs a parameter or a config step before anyone else can run it.</p></div></section><section id="next"><h2>What comes next</h2><p>The warehouse is built and tested through the Gold layer. The next stage is the part the title promises: connecting Power BI to <code>gold.dim_customers</code>, <code>gold.dim_products</code> and <code>gold.fact_sales</code> and building the sales dashboard on top of them. Because the model is already a star schema, that step should be mostly about the visuals and not the plumbing.</p></section>
+  <div class="cta"><p>All the scripts, test queries and sample files are in the repository, so the warehouse can be rebuilt from scratch.</p><a href="https://github.com/bensonmukuria/Bike_Sales_Data_Warehouse_Project" target="_blank" rel="noopener">View the repository</a></div>
+</main>
+</div>
+<footer>&copy; Benson Kimani</footer>
+<script>
+const links=document.querySelectorAll('nav.toc a');
+const sections=Array.from(links).map(a=>document.querySelector(a.getAttribute('href')));
+window.addEventListener('scroll',()=>{let idx=0;sections.forEach((s,i)=>{if(s&&s.getBoundingClientRect().top<100)idx=i;});links.forEach(a=>a.classList.remove('current'));links[idx].classList.add('current');},{passive:true});
+</script>
+</body></html>
