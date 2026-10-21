@@ -257,7 +257,7 @@ images/dw_gold_quality_check.png -->
 
 </section><section id="architecture"><h2>The architecture</h2>
 <p>I chose the Medallion approach: Bronze, Silver, Gold. Each layer has one job, which keeps the logic easy to find and easy to test.</p>
-<figure class="shot wide"><img loading="lazy" src="Images/Warehouse_Design.drawio" alt="Warehouse design: CRM and ERP CSV files load into Bronze, then Silver, then Gold, which serve BI reporting, ad-hoc SQL and machine learning"></figure>
+<figure class="shot wide"><img loading="lazy" src="Images/Data_warehouse_design.jfif" alt="Warehouse design: CRM and ERP CSV files load into Bronze, then Silver, then Gold, which serve BI reporting, ad-hoc SQL and machine learning"></figure>
 <p class="figcap">The warehouse design I drew in Draw.io. Bronze and Silver are physical tables loaded by stored procedures. Gold is a set of views.</p>
 <div class="tablewrap"><table class="data">
 <thead><tr><th>Layer</th><th>Job</th><th>Object type</th><th>Load</th><th>Transformation</th></tr></thead>
