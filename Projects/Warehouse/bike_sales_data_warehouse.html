@@ -325,7 +325,7 @@ images/dw_gold_quality_check.png -->
 <p>Three techniques did most of the heavy lifting. <code>ROW_NUMBER()</code> picks one survivor when a customer appears more than once:</p>
 <figure class="shot"><img loading="lazy" src="images/dw_silver_row_number.png" alt="SQL: ROW_NUMBER keeps the latest record per customer"></figure>
 <p><code>LEAD()</code> turns a list of product start dates into proper validity windows, so every version knows when it stopped being current:</p>
-<figure class="shot"><img loading="lazy" src="images/dw_silver_lead.png" alt="SQL: LEAD calculates each product version end date"></figure>
+<figure class="shot"><img loading="lazy" src="images/dw_silver_sales_rule.png" alt="SQL: LEAD calculates each product version end date"></figure>
 <p>And a plain business rule keeps the sales figures honest: the amount should always equal quantity times price.</p>
 <figure class="shot"><img loading="lazy" src="images/dw_silver_sales_rule.png" alt="SQL: CASE recalculates sales as quantity times price"></figure>
 <p>Every Silver table also gets a <code>dwh_create_date</code> column, filled automatically, so I can always see when a row was loaded. The load procedure follows the same pattern as Bronze: truncate, insert, time it, catch errors.</p>
@@ -377,7 +377,7 @@ images/dw_gold_quality_check.png -->
 
 </div></section><section id="quality"><h2>Testing the model</h2>
 <p>Gold has its own test script. It checks that the surrogate keys are unique, and that every row in the fact view can find both its customer and its product.</p>
-<figure class="shot"><img loading="lazy" src="images/dw_gold_quality_check.png" alt="SQL: check that every sales row finds its customer and product"></figure>
+<figure class="shot"><img loading="lazy" src="Images/dw_gold_quality_check.png" alt="SQL: check that every sales row finds its customer and product"></figure>
 <p>I ran these in SSMS while building each view, and the results came back as expected: no duplicate keys and no orphaned sales. These are checks I ran by hand and not an automated pipeline, which is worth saying plainly.</p>
 
 </section><section id="repo"><h2>The repository</h2>
