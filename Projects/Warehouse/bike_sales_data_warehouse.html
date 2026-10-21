@@ -257,7 +257,7 @@ images/dw_gold_quality_check.png -->
 
 </section><section id="architecture"><h2>The architecture</h2>
 <p>I chose the Medallion approach: Bronze, Silver, Gold. Each layer has one job, which keeps the logic easy to find and easy to test.</p>
-<figure class="shot wide"><img loading="lazy" src="../images/dw_warehouse_design.png" alt="Warehouse design: CRM and ERP CSV files load into Bronze, then Silver, then Gold, which serve BI reporting, ad-hoc SQL and machine learning"></figure>
+<figure class="shot wide"><img loading="lazy" src="Images/Warehouse_Design.drawio" alt="Warehouse design: CRM and ERP CSV files load into Bronze, then Silver, then Gold, which serve BI reporting, ad-hoc SQL and machine learning"></figure>
 <p class="figcap">The warehouse design I drew in Draw.io. Bronze and Silver are physical tables loaded by stored procedures. Gold is a set of views.</p>
 <div class="tablewrap"><table class="data">
 <thead><tr><th>Layer</th><th>Job</th><th>Object type</th><th>Load</th><th>Transformation</th></tr></thead>
@@ -301,7 +301,7 @@ images/dw_gold_quality_check.png -->
 
 </section><section id="build"><h2>Building the layers</h2><p>Each layer got the same treatment: understand the data, write the code, test it, document it, commit it. Here they are in the order I built them.</p><div class="finding" id="bronze"><p class="num">Layer 1</p><h3>Bronze: land the raw data</h3>
 <p>Bronze has one table for each CSV file, with the same columns as the source. The <code>bronze.load_bronze</code> procedure empties each table and bulk loads the file again, so every run is a clean full refresh.</p>
-<figure class="shot"><img loading="lazy" src="../images/dw_bronze_bulk_insert.png" alt="SQL: TRUNCATE TABLE and BULK INSERT loading cust_info.csv into bronze.crm_cust_info"></figure>
+<figure class="shot"><img loading="lazy" src="images/dw_bronze_bulk_insert.png" alt="SQL: TRUNCATE TABLE and BULK INSERT loading cust_info.csv into bronze.crm_cust_info"></figure>
 <p class="codecap">The pattern repeated for all six files. The file path is a placeholder here.</p>
 <p>The procedure also prints a message for each table and the load time in seconds, and wraps the whole thing in <code>TRY...CATCH</code>, so a failed load shows up with an error message instead of passing quietly.</p>
 
@@ -323,11 +323,11 @@ images/dw_gold_quality_check.png -->
 <tr><td><b>ERP categories</b></td><td>Already tidy</td><td>Loaded as it arrived</td></tr>
 </tbody></table></div>
 <p>Three techniques did most of the heavy lifting. <code>ROW_NUMBER()</code> picks one survivor when a customer appears more than once:</p>
-<figure class="shot"><img loading="lazy" src="../images/dw_silver_row_number.png" alt="SQL: ROW_NUMBER keeps the latest record per customer"></figure>
+<figure class="shot"><img loading="lazy" src="images/dw_silver_row_number.png" alt="SQL: ROW_NUMBER keeps the latest record per customer"></figure>
 <p><code>LEAD()</code> turns a list of product start dates into proper validity windows, so every version knows when it stopped being current:</p>
-<figure class="shot"><img loading="lazy" src="../images/dw_silver_lead.png" alt="SQL: LEAD calculates each product version end date"></figure>
+<figure class="shot"><img loading="lazy" src="images/dw_silver_lead.png" alt="SQL: LEAD calculates each product version end date"></figure>
 <p>And a plain business rule keeps the sales figures honest: the amount should always equal quantity times price.</p>
-<figure class="shot"><img loading="lazy" src="../images/dw_silver_sales_rule.png" alt="SQL: CASE recalculates sales as quantity times price"></figure>
+<figure class="shot"><img loading="lazy" src="images/dw_silver_sales_rule.png" alt="SQL: CASE recalculates sales as quantity times price"></figure>
 <p>Every Silver table also gets a <code>dwh_create_date</code> column, filled automatically, so I can always see when a row was loaded. The load procedure follows the same pattern as Bronze: truncate, insert, time it, catch errors.</p>
 <p>I wrote a test script for this layer too. It checks for duplicate or empty keys, leftover spaces, unexpected category values, start dates that fall after end dates, order dates that fall after ship dates, sales that do not match quantity times price, and birth dates outside a believable range. Each query is written so that it should return nothing when the data is clean.</p>
 
@@ -356,7 +356,7 @@ images/dw_gold_quality_check.png -->
 </svg></div>
 <p class="figcap">The star schema. Sales sit in the centre, described by a customer dimension and a product dimension.</p>
 <p>The customer dimension joins three Silver tables. The CRM is the master record, and the ERP only fills the gaps:</p>
-<figure class="shot"><img loading="lazy" src="../images/dw_gold_dim_customers.png" alt="SQL: CREATE VIEW gold.dim_customers"></figure>
+<figure class="shot"><img loading="lazy" src="images/dw_gold_dim_customers.png" alt="SQL: CREATE VIEW gold.dim_customers"></figure>
 <p>A few decisions are worth explaining, because they are the kind of thing someone could argue either way:</p>
 <ul>
 <li><b>CRM wins for gender.</b> When the two systems disagreed, I treated the CRM as the master and used the ERP only when the CRM had no usable value. Still missing after that means <code>n/a</code>.</li>
@@ -366,7 +366,7 @@ images/dw_gold_quality_check.png -->
 <li><b>Friendly names.</b> <code>cst_firstname</code> becomes <code>first_name</code>, <code>sls_sales</code> becomes <code>sales_amount</code>. An analyst should not need a decoder ring.</li>
 </ul>
 <p>The fact view then swaps the source IDs for the new surrogate keys:</p>
-<figure class="shot"><img loading="lazy" src="../images/dw_gold_fact_sales.png" alt="SQL: CREATE VIEW gold.fact_sales"></figure>
+<figure class="shot"><img loading="lazy" src="images/dw_gold_fact_sales.png" alt="SQL: CREATE VIEW gold.fact_sales"></figure>
 <div class="tablewrap"><table class="data">
 <thead><tr><th>Gold view</th><th>Built from</th><th>One row per</th></tr></thead>
 <tbody>
@@ -377,7 +377,7 @@ images/dw_gold_quality_check.png -->
 
 </div></section><section id="quality"><h2>Testing the model</h2>
 <p>Gold has its own test script. It checks that the surrogate keys are unique, and that every row in the fact view can find both its customer and its product.</p>
-<figure class="shot"><img loading="lazy" src="../images/dw_gold_quality_check.png" alt="SQL: check that every sales row finds its customer and product"></figure>
+<figure class="shot"><img loading="lazy" src="images/dw_gold_quality_check.png" alt="SQL: check that every sales row finds its customer and product"></figure>
 <p>I ran these in SSMS while building each view, and the results came back as expected: no duplicate keys and no orphaned sales. These are checks I ran by hand and not an automated pipeline, which is worth saying plainly.</p>
 
 </section><section id="repo"><h2>The repository</h2>
