@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Change Data Capture | Benson Kimani Mukuria</title>
+<meta name="description" content="Why polling a table misses deleted rows, how log-based change data capture fixes this, and how to recover when the pipeline stops for two hours.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,500;8..60,600;8..60,700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1e2321; --ink-soft:#4b534e; --paper:#eeece4; --panel:#fdfcf9;
+    --clay:#b9793a; --clay-dark:#8f5a25; --sage:#5f6f5a; --line:#d9d5c9; --line-soft:#e4e1d6;
+    --serif:"Source Serif 4",Georgia,serif; --sans:"IBM Plex Sans",-apple-system,"Segoe UI",sans-serif;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth;scroll-padding-top:72px}
+  body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--sans);line-height:1.65;font-variant-numeric:tabular-nums}
+  a{color:inherit}
+  a:focus-visible,.btn:focus-visible{outline:2px solid var(--sage);outline-offset:3px}
+  .wrap{max-width:1040px;margin:0 auto;padding-inline:24px}
+
+  /* top bar */
+  .topbar{position:sticky;top:0;z-index:20;background:rgba(238,236,228,.94);backdrop-filter:blur(6px);border-bottom:1px solid var(--line)}
+  .topbar .wrap{display:flex;align-items:center;justify-content:space-between;gap:16px;padding-block:14px}
+  .brand{font-family:var(--serif);font-weight:600;font-size:1.05rem;text-decoration:none}
+  .topbar nav{display:flex;align-items:center;gap:22px;font-size:.9rem;font-weight:500}
+  .topbar nav a{text-decoration:none;color:var(--ink-soft)}
+  .topbar nav a:hover{color:var(--ink)}
+  .topbar nav a.pill{color:var(--paper);background:var(--ink);padding:7px 16px;border-radius:999px;font-weight:600}
+  .topbar nav a.pill:hover{background:var(--clay-dark);color:#fff}
+
+  /* hero */
+  .hero{padding-block:72px 56px}
+  .hero .wrap{display:grid;grid-template-columns:minmax(0,1fr) 190px;gap:48px;align-items:center}
+  .eyebrow{font-size:.78rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--sage);margin:0 0 14px}
+  .hero h1{font-family:var(--serif);font-weight:700;font-size:clamp(2.2rem,5.2vw,3.5rem);line-height:1.08;margin:0 0 18px;text-wrap:balance}
+  .hero h1 em{font-style:normal;color:var(--clay)}
+  .hero p.lead{font-size:1.12rem;color:var(--ink-soft);max-width:54ch;margin:0 0 28px}
+  .actions{display:flex;flex-wrap:wrap;gap:12px}
+  .btn{display:inline-block;text-decoration:none;font-weight:600;font-size:.92rem;padding:12px 22px;border-radius:6px;border:1px solid var(--ink);transition:background .15s,color .15s,border-color .15s}
+  .btn.solid{background:var(--ink);color:var(--paper)}
+  .btn.solid:hover{background:var(--clay-dark);border-color:var(--clay-dark);color:#fff}
+  .btn.ghost{background:transparent;color:var(--ink)}
+  .btn.ghost:hover{background:var(--ink);color:var(--paper)}
+  .portrait{position:relative;width:190px;min-height:190px;border-radius:14px;overflow:hidden;border:1px solid var(--line);background:var(--panel);justify-self:end;box-shadow:0 14px 30px -20px rgba(30,35,33,.5)}
+  .portrait .mono{position:absolute;inset:0;display:grid;place-items:center;font-family:var(--serif);font-weight:600;font-size:3.2rem;color:var(--clay)}
+  .portrait img{position:relative;z-index:1;width:100%;height:auto;display:block}
+
+  /* proof strip */
+  .proof{border-block:1px solid var(--line);background:var(--panel)}
+  .proof .wrap{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:0}
+  .proof .item{padding:22px 20px;border-left:1px solid var(--line-soft)}
+  .proof .item:first-child{border-left:0;padding-left:0}
+  .proof .v{font-family:var(--serif);font-weight:700;font-size:1.9rem;color:var(--clay);line-height:1.1}
+  .proof .k{font-size:.84rem;color:var(--ink-soft);margin-top:4px}
+
+  /* sections */
+  section.block{padding-block:72px 8px}
+  .head{display:flex;align-items:baseline;justify-content:space-between;gap:16px;flex-wrap:wrap;margin:0 0 28px}
+  .head h2{font-family:var(--serif);font-weight:600;font-size:1.7rem;margin:0}
+  .head p{margin:0;color:var(--ink-soft);font-size:.95rem}
+
+  /* project cards */
+  .cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:28px}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:10px;overflow:hidden;display:flex;flex-direction:column;transition:transform .18s,box-shadow .18s}
+  .card:hover{transform:translateY(-3px);box-shadow:0 14px 30px -18px rgba(30,35,33,.45)}
+  .card .shot{display:block;aspect-ratio:16/9;overflow:hidden;border-bottom:1px solid var(--line);background:var(--line-soft)}
+  .card .shot img{width:100%;height:100%;object-fit:cover;object-position:top;display:block}
+  .card .body{padding:22px 24px 24px;display:flex;flex-direction:column;gap:12px;flex:1}
+  .tags{display:flex;flex-wrap:wrap;gap:6px;margin:0;padding:0;list-style:none}
+  .tags li{font-size:.74rem;font-weight:600;letter-spacing:.03em;color:var(--sage);border:1px solid var(--line);border-radius:999px;padding:2px 10px;background:var(--paper)}
+  .card h3{font-family:var(--serif);font-weight:600;font-size:1.35rem;margin:0;line-height:1.25}
+  .card h3 a{text-decoration:none}
+  .card p{margin:0;color:var(--ink-soft);font-size:.96rem}
+  .card .result{color:var(--ink);font-weight:500}
+  .card .links{display:flex;flex-wrap:wrap;gap:18px;margin-top:auto;padding-top:6px;font-size:.92rem;font-weight:600}
+  .card .links a{color:var(--clay-dark);text-decoration:none;border-bottom:1px solid var(--clay)}
+  .card .links a:hover{color:var(--ink);border-color:var(--ink)}
+
+  /* about */
+  .about{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:48px;align-items:start}
+  .about p{margin:0 0 16px;max-width:60ch}
+  .skills{margin:0;padding:0;list-style:none;display:flex;flex-wrap:wrap;gap:10px}
+  .skills li{font-size:.9rem;font-weight:500;background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:7px 14px}
+  .skills-label{font-size:.78rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--sage);margin:0 0 12px}
+
+  /* contact */
+  .contact{margin-top:80px;background:var(--ink);color:var(--paper)}
+  .contact .wrap{padding-block:56px;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:32px;align-items:center}
+  .contact h2{font-family:var(--serif);font-weight:600;font-size:1.8rem;margin:0 0 8px}
+  .contact p{margin:0;color:#c9c8bf;max-width:46ch}
+  .contact .rows{display:flex;flex-direction:column;gap:6px;margin-top:20px;font-size:.95rem}
+  .contact .rows a{color:var(--paper);text-decoration:none;border-bottom:1px solid #5b625d;width:fit-content}
+  .contact .rows a:hover{border-color:var(--clay)}
+  .contact .btn.solid{background:var(--paper);color:var(--ink);border-color:var(--paper)}
+  .contact .btn.solid:hover{background:var(--clay);border-color:var(--clay);color:#fff}
+  .contact .btn.ghost{color:var(--paper);border-color:#7b817c}
+  .contact .btn.ghost:hover{background:var(--paper);color:var(--ink)}
+  .contact .actions{flex-direction:column;align-items:stretch}
+  .contact .actions .btn{text-align:center}
+  footer{background:var(--ink);color:#8d928e;font-size:.82rem;border-top:1px solid #323937}
+  footer .wrap{padding-block:18px}
+
+  @media (max-width:860px){
+    .hero{padding-block:44px 40px}
+    .hero .wrap{grid-template-columns:1fr;gap:28px}
+    .portrait{order:-1;justify-self:start;width:130px;min-height:130px}
+    .portrait .mono{font-size:2rem}
+    .proof .wrap{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .proof .item:nth-child(3){border-left:0;padding-left:0}
+    .proof .item:nth-child(n+3){border-top:1px solid var(--line-soft)}
+    .cards,.about{grid-template-columns:1fr}
+    .about{gap:28px}
+    .contact .wrap{grid-template-columns:1fr}
+    .topbar nav a.hide-sm{display:none}
+  }
+  @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}.card{transition:none}.card:hover{transform:none}}
+
+  /* journal article */
+  .topbar nav a.current{color:var(--ink);border-bottom:2px solid var(--clay);padding-bottom:2px}
+  .art-head{padding-block:60px 12px}
+  .art-head .wrap,.art-body .wrap{max-width:780px}
+  .crumbs{font-size:.85rem;margin:0 0 22px}
+  .crumbs a{color:var(--ink-soft);text-decoration:none;border-bottom:1px solid var(--line)}
+  .crumbs a:hover{color:var(--ink);border-color:var(--ink)}
+  .art-head h1{font-family:var(--serif);font-weight:700;font-size:clamp(2rem,4.8vw,3rem);line-height:1.1;margin:0 0 16px;text-wrap:balance}
+  .art-head h1 em{font-style:normal;color:var(--clay)}
+  .art-head .dek{font-size:1.12rem;color:var(--ink-soft);max-width:60ch;margin:0 0 18px}
+  .art-head .meta{font-size:.84rem;color:var(--ink-soft);margin:0 0 30px}
+  .cover{margin:0 0 8px}
+  .cover img{width:100%;display:block;border:1px solid var(--line);border-radius:8px}
+  .art-body{padding-block:28px 0}
+  .intoc{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:18px 22px;margin:0 0 34px}
+  .intoc b{display:block;font-size:.78rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--sage);margin-bottom:8px}
+  .intoc ol{margin:0;padding-left:20px;columns:2;column-gap:32px;font-size:.92rem}
+  .intoc li{margin:3px 0;break-inside:avoid}
+  .intoc a{text-decoration:none;color:var(--ink-soft)}
+  .intoc a:hover{color:var(--clay-dark);text-decoration:underline}
+  .prose{font-size:1.04rem}
+  .prose h2{font-family:var(--serif);font-weight:600;font-size:1.55rem;line-height:1.25;margin:56px 0 14px;scroll-margin-top:80px;text-wrap:balance}
+  .prose h3{font-family:var(--serif);font-weight:600;font-size:1.15rem;margin:26px 0 8px}
+  .prose p{margin:0 0 16px;max-width:66ch}
+  .prose b,.prose strong{font-weight:600}
+  .prose ul,.prose ol{max-width:66ch;margin:0 0 18px;padding-left:22px}
+  .prose li{margin:6px 0}
+  .prose a{color:var(--clay-dark)}
+  .prose code{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:.88em;background:var(--panel);border:1px solid var(--line-soft);border-radius:4px;padding:1px 5px}
+  pre.code{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:14px 16px;overflow-x:auto;font-size:.84rem;line-height:1.6;margin:0 0 8px;font-family:ui-monospace,Menlo,Consolas,monospace;max-width:100%}
+  .codecap{font-size:.82rem;color:var(--ink-soft);font-style:italic;margin:0 0 20px}
+  .tablewrap{overflow-x:auto;margin:20px 0 14px;max-width:100%}
+  table.data{border-collapse:collapse;width:100%;min-width:480px;font-size:.94rem;background:var(--panel);border:1px solid var(--line)}
+  table.data th,table.data td{padding:10px 14px;text-align:left;border-bottom:1px solid var(--line-soft);vertical-align:top}
+  table.data th{font-size:.78rem;letter-spacing:.08em;text-transform:uppercase;color:var(--sage);background:var(--paper);font-weight:600}
+  table.data td.num,table.data th.num{text-align:right}
+  table.data tr:last-child td{border-bottom:0}
+  .hyp{margin:0 0 18px;display:grid;gap:10px;max-width:66ch}
+  .hyp div{border-left:3px solid var(--sage);padding:2px 0 2px 16px}
+  .hyp dt{font-weight:600;font-size:.9rem}
+  .hyp dd{margin:2px 0 0}
+  .callout{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--clay);border-radius:6px;padding:20px 24px;margin:40px 0 0}
+  .callout h2{margin:0 0 10px;font-size:1.3rem}
+  .callout p:last-child{margin-bottom:0}
+  .pair{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:8px 0 18px}
+  .pair>div{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:16px 18px}
+  .pair .lab{font-size:.74rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase;margin:0 0 6px}
+  .pair .ok .lab{color:var(--sage)}
+  .pair .bad .lab{color:var(--clay-dark)}
+  .pair p{margin:0;font-size:.97rem}
+  .pair h4{font-family:var(--serif);font-size:1.02rem;margin:0 0 6px}
+  .takeaways{counter-reset:t;list-style:none;padding:0;margin:0 0 8px;display:grid;gap:12px;max-width:66ch}
+  .takeaways li{counter-increment:t;display:grid;grid-template-columns:34px 1fr;gap:10px;margin:0}
+  .takeaways li::before{content:counter(t);font-family:var(--serif);font-weight:600;color:var(--sage);font-size:1.1rem;border-bottom:1px solid var(--line);align-self:start;padding-bottom:2px}
+  .prevnext{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-top:56px;padding-top:24px;border-top:1px solid var(--line)}
+  .prevnext a{display:block;text-decoration:none;max-width:48%;min-width:200px}
+  .prevnext small{display:block;font-size:.74rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--sage)}
+  .prevnext span{font-family:var(--serif);font-weight:600;font-size:1.1rem;border-bottom:1px solid var(--clay)}
+  .prevnext a:hover span{color:var(--clay-dark)}
+  .prevnext .next{margin-left:auto;text-align:right}
+  .contact{margin-top:96px}
+  @media (max-width:860px){
+    .art-head{padding-block:36px 8px}
+    .intoc ol{columns:1}
+    .pair{grid-template-columns:1fr}
+    .prevnext a{max-width:100%}
+    .prevnext .next{text-align:left;margin-left:0}
+  }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="wrap">
+    <a class="brand" href="../index.html">Benson Kimani</a>
+    <nav aria-label="Main">
+      <a class="hide-sm" href="../index.html#projects">Projects</a>
+      <a class="hide-sm" href="../index.html#about">About</a>
+      <a class="hide-sm current" href="../Journals.html" aria-current="page">Journals</a>
+      <a class="hide-sm" href="#contact">Contact</a>
+      <a class="pill" href="../assets/BENSON KIMANI MUKURIA.pdf" target="_blank" rel="noopener">Resume</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <article>
+    <header class="art-head">
+      <div class="wrap">
+        <p class="crumbs"><a href="../Journals.html">&larr; All journals</a></p>
+        <p class="eyebrow">Journal</p>
+        <h1>Change data capture, explained with <em>one deleted order</em></h1>
+        <p class="dek">Why copying a table on a timer misses deletes, how reading the database log fixes this, and what to do when the pipeline stops for two hours.</p>
+        <p class="meta">By Benson Kimani Mukuria &middot; 9 min read</p>
+        <figure class="cover"><img src="../images/cdc_ingestion.png" alt="Pipeline from PostgreSQL through Debezium and Kafka to Snowflake, carrying insert, update and delete events"></figure>
+      </div>
+    </header>
+
+    <div class="art-body">
+      <div class="wrap">
+        <nav class="intoc" aria-label="In this note"><b>In this note</b><ol><li><a href="#setup">The problem</a></li><li><a href="#polling">Polling, and where the method breaks</a></li><li><a href="#cdc">CDC reads the log</a></li><li><a href="#parts">The four parts</a></li><li><a href="#event">What an event looks like</a></li><li><a href="#q1">Capturing deletes</a></li><li><a href="#q2">A two-hour outage</a></li><li><a href="#deletes">Where deletes live</a></li><li><a href="#mistakes">Mistakes to avoid</a></li><li><a href="#takeaways">Key takeaways</a></li></ol></nav>
+        <div class="prose">
+
+<p>Polling is the first way most of us move data. Ask the source table what changed, copy the answer, repeat every minute. This works until someone deletes a row.</p>
+<p>These are my notes from a design exercise: moving order data from PostgreSQL into Snowflake for an imaginary online shop. The shop and the numbers are made up. The design choices are the ones real pipelines face.</p>
+
+<h2 id="setup">The problem: orders in PostgreSQL, reports in Snowflake</h2>
+<p>Customers place orders, change delivery details, cancel orders and delete unpaid drafts. PostgreSQL holds the official record. Management wants the same activity in Snowflake for reports, and wants every change visible there within 30 seconds.</p>
+<p>Latency is the time between a change in the source and the moment analysts see the change. A customer cancels at 10:00:00. Analysts see the cancellation at 10:00:12. The latency is 12 seconds, inside the limit.</p>
+<p>Five terms carry the rest of this note:</p>
+<div class="tablewrap"><table class="data">
+  <thead><tr><th>Term</th><th>Meaning</th></tr></thead>
+  <tbody>
+    <tr><td><b>OLTP</b></td><td>The system running the business in real time, such as PostgreSQL handling orders and payments.</td></tr>
+    <tr><td><b>OLAP</b></td><td>The system built for analysis, such as Snowflake answering which products earned the most this quarter.</td></tr>
+    <tr><td><b>Ingestion</b></td><td>Bringing data into a system.</td></tr>
+    <tr><td><b>Event</b></td><td>A record of a change, such as order 105 created or deleted.</td></tr>
+    <tr><td><b>Near-real-time</b></td><td>Changes arrive quickly enough to stay useful. A 30-second target counts.</td></tr>
+  </tbody>
+</table></div>
+<p>A database transaction and an event are related but different. A transaction is a group of operations the database treats as one unit. An event is the record of a change the pipeline captures.</p>
+
+<h2 id="polling">Polling, and where the method breaks</h2>
+<p>Take a small orders table:</p>
+<div class="tablewrap"><table class="data">
+  <thead><tr><th>order_id</th><th>customer</th><th class="num">amount</th><th>status</th><th>updated_at</th></tr></thead>
+  <tbody>
+    <tr><td>101</td><td>Mary</td><td class="num">2,500</td><td>Completed</td><td>10:00:00</td></tr>
+    <tr><td>102</td><td>John</td><td class="num">1,800</td><td>Pending</td><td>10:01:00</td></tr>
+    <tr><td>103</td><td>Peter</td><td class="num">3,200</td><td>Pending</td><td>10:02:00</td></tr>
+  </tbody>
+</table></div>
+<p>The polling approach runs this query every minute:</p>
+<pre class="code">SELECT *
+FROM orders
+WHERE updated_at &gt; :last_sync;</pre>
+<p class="codecap">last_sync holds the time of the last successful extraction</p>
+<p>The last sync was at 10:00. At 10:01 the query returns John's order, because its updated_at is 10:01. For a small table with slow change, this is a fine design. Three problems appear as the table grows.</p>
+
+<h3>Hard deletes disappear</h3>
+<p>Peter deletes unpaid draft 103. PostgreSQL removes the row completely. The next query finds nothing to return, because no surviving row carries a newer updated_at. Snowflake keeps an order the source no longer has. A timestamp query sees a change only when a surviving row reports the change.</p>
+
+<h3>Load on the source</h3>
+<p>With hundreds of millions of rows, every poll uses CPU, memory and disk reads on the database serving customers. Indexes and careful queries reduce the cost. They do not remove the cost.</p>
+
+<h3>Latency</h3>
+<p>Poll every five minutes and a change waits up to five minutes before extraction starts. Poll every five seconds and the database takes far more queries, with no guarantee the data reaches Snowflake inside 30 seconds.</p>
+
+<h2 id="cdc">Change data capture reads the log</h2>
+<p>Change data capture, or CDC, reverses the question. The pipeline stops asking the table what changed. The pipeline reads a record of changes as the database commits them.</p>
+<p>PostgreSQL already keeps this record for its own reliability. This record is the Write-Ahead Log, or WAL. PostgreSQL records each change in the WAL before the data pages reach their final place on disk, and uses the log for crash recovery. Log-based CDC reads the same log.</p>
+<p>The raw WAL is not a ready-made list of business events. PostgreSQL's logical decoding reads the relevant log records and exposes them as row-level changes. A connector such as Debezium picks them up from there.</p>
+<p>Three changes in the log look like this:</p>
+<div class="tablewrap"><table class="data">
+  <thead><tr><th>Operation</th><th>What happened</th></tr></thead>
+  <tbody>
+    <tr><td><b>INSERT</b></td><td>Order 104 is created for KSh 4,000.</td></tr>
+    <tr><td><b>UPDATE</b></td><td>Order 102 changes from Pending to Cancelled.</td></tr>
+    <tr><td><b>DELETE</b></td><td>Unpaid draft order 103 is removed.</td></tr>
+  </tbody>
+</table></div>
+<p>Log-based CDC captures all three, including the delete polling misses.</p>
+<p>Other databases keep a similar log under another name:</p>
+<div class="tablewrap"><table class="data">
+  <thead><tr><th>Database</th><th>Log used for CDC</th></tr></thead>
+  <tbody>
+    <tr><td>PostgreSQL</td><td>WAL, read through logical decoding</td></tr>
+    <tr><td>MySQL</td><td>Binary log (binlog)</td></tr>
+    <tr><td>SQL Server</td><td>Transaction log, through its supported CDC or replication features</td></tr>
+  </tbody>
+</table></div>
+
+<h2 id="parts">The four parts of the pipeline</h2>
+<ul>
+  <li><b>PostgreSQL</b> stores the orders and records every change.</li>
+  <li><b>Debezium</b> reads the logical change stream and turns each change into a structured event.</li>
+  <li><b>Apache Kafka</b> stores the events in ordered partitions, so each consumer reads at its own pace.</li>
+  <li><b>Snowflake</b> receives the events, loads them into tables and serves the analysis.</li>
+</ul>
+<p>CDC does not require Kafka. Some designs send events straight to the destination or through another streaming platform. Kafka earns its place when you want buffering, replay, several consumers or independent scaling.</p>
+
+<h2 id="event">What a change event looks like</h2>
+<p>Order 102 changes from Pending to Cancelled. A simplified Debezium event looks like this:</p>
+<pre class="code">{
+  "before": { "order_id": 102, "status": "Pending" },
+  "after":  { "order_id": 102, "status": "Cancelled" },
+  "op": "u"
+}</pre>
+<p class="codecap">Illustrative JSON, not a complete Debezium message</p>
+<p>Three parts matter. <code>before</code> holds the previous row, when available. <code>after</code> holds the new row. <code>op</code> names the operation: <code>c</code> for create, <code>u</code> for update, <code>d</code> for delete and <code>r</code> for a snapshot read.</p>
+<p>Now the unpaid draft is deleted:</p>
+<pre class="code">{
+  "before": { "order_id": 103, "status": "Draft" },
+  "after": null,
+  "op": "d"
+}</pre>
+<p>The row is gone from PostgreSQL. The event still tells every downstream system about the deletion. CDC captures the fact of a delete, not only the rows left behind.</p>
+<p>The columns inside a delete event depend on the connector setup and the database logging settings. Do not assume every deleted row arrives with every original value.</p>
+
+<h2 id="q1">Design question 1: capture deletes without application triggers</h2>
+<p>The answer is log-based CDC with PostgreSQL logical decoding and Debezium. The steps:</p>
+<ol>
+  <li>Configure PostgreSQL for logical replication, with a replication slot and an output plugin.</li>
+  <li>Run the Debezium PostgreSQL connector with the replication permissions the connector needs.</li>
+  <li>Debezium reads committed row-level changes from the logical stream: inserts, updates and deletes.</li>
+  <li>Send the events to Kafka for downstream consumers.</li>
+  <li>Apply the changes in Snowflake so each order matches the current source state.</li>
+</ol>
+<p>A trigger adds database logic for each change and means altering the application. Log-based CDC reads the log the database already writes.</p>
+<p>CDC still has a cost. Replication slots keep WAL until the connector reads the log, so retained WAL takes storage. Monitor the slot and the WAL size.</p>
+
+<h2 id="q2">Design question 2: the pipeline stops for two hours</h2>
+<p>The first instinct is to restart the job and reload everything. Skip this. Recover from the last saved position, process the backlog and apply changes safely. Three terms help:</p>
+<dl class="hyp">
+  <div><dt>Checkpoint, or offset</dt><dd>A saved position showing how far the pipeline has read. For PostgreSQL CDC, the Log Sequence Number (LSN) marks a position in the WAL.</dd></div>
+  <div><dt>Idempotency</dt><dd>Applying the same operation twice leaves the same result as applying the operation once. Setting order 102 to Cancelled twice still leaves one cancelled order.</dd></div>
+  <div><dt>Backlog</dt><dd>The events produced while the pipeline was stopped, still waiting for processing.</dd></div>
+</dl>
+<p>The recovery plan:</p>
+<ol>
+  <li><b>Resume from the saved position.</b> Debezium stores connector offsets and restarts from the last one, provided the needed WAL is still available and the replication slot is valid.</li>
+  <li><b>Keep the events while Snowflake catches up.</b> Kafka holds events for consumers while they are down, within its retention limits and storage. If Debezium itself stopped, PostgreSQL must retain the WAL so the changes stay recoverable.</li>
+  <li><b>Make processing safe against duplicates.</b> Use the order primary key and event metadata, and update the matching order instead of inserting a new row per event. A Snowflake MERGE applies changes by key. MERGE alone does not give exactly-once processing, so handle duplicates on purpose and never let a stale event overwrite newer state.</li>
+  <li><b>Process the backlog at a controlled rate.</b> Batch or micro-batch, watch the queue lag and avoid uncontrolled full-table reloads. Add resources when measurements justify them.</li>
+  <li><b>Check the pipeline has caught up.</b> Track source-to-destination latency, the oldest unprocessed event, consumer lag, WAL retention, ingestion errors and row-level consistency. Declare recovery only when freshness is back inside the target.</li>
+</ol>
+
+<h3>Putting numbers on the outage</h3>
+<p>The exercise sets the load at 50,000 orders per minute.</p>
+<div class="tablewrap"><table class="data">
+  <thead><tr><th>Quantity</th><th class="num">Value</th><th>Working</th></tr></thead>
+  <tbody>
+    <tr><td>Incoming rate</td><td class="num">833.3 per second</td><td>50,000 ÷ 60</td></tr>
+    <tr><td>Events in 2 hours</td><td class="num">6,000,000</td><td>50,000 × 120 minutes</td></tr>
+    <tr><td>Processing rate (assumed)</td><td class="num">1,500 per second</td><td>An assumption for the exercise</td></tr>
+    <tr><td>Net backlog reduction</td><td class="num">666.7 per second</td><td>1,500 − 833.3</td></tr>
+    <tr><td>Time to clear the backlog</td><td class="num">about 9,000 seconds</td><td>6,000,000 ÷ 666.7, close to 2.5 hours</td></tr>
+  </tbody>
+</table></div>
+<p>The working assumes steady rates and no other bottleneck. If 50,000 counts new orders only, updates and deletes add to the load.</p>
+<p>Catching up requires a processing rate above the arrival rate. At 833 events per second in and 833 out, the backlog never shrinks.</p>
+<p>During the outage the pipeline misses the 30-second target for the affected events. The design goal is to meet the target in normal operation and restore the target fast after a failure.</p>
+
+<h2 id="deletes">Where deletes live in Snowflake</h2>
+<p>Capturing a delete is half the job. The other half is choosing how Snowflake stores the delete. Two common patterns:</p>
+<div class="pair">
+  <div class="ok"><p class="lab">Current state</p><h4>Remove the row</h4><p>Best when analysts want a table showing the latest order state. The delete event names the order, and the consumer removes its row.</p></div>
+  <div class="ok"><p class="lab">Event history</p><h4>Append the event</h4><p>Best for audit trails and history. An append-only table stores the order key, the event type and metadata, and proves the order existed and was deleted.</p></div>
+</div>
+<p>A solid platform uses both: a raw event table for traceability and a curated current-state table for reports.</p>
+<p>Keep cancellation and deletion apart. A cancellation is usually an UPDATE to status Cancelled, and the order stays. A hard delete is a DELETE, and the row is gone. The transformation logic treats them differently.</p>
+
+<h2 id="mistakes">Mistakes to avoid</h2>
+<ul>
+  <li><b>Treating a cancellation like a deletion.</b> One changes a status. The other removes a row.</li>
+  <li><b>Reloading everything after a short outage.</b> Resume from the saved offset.</li>
+  <li><b>Ignoring WAL growth.</b> A stalled connector leaves the slot holding log on the source database.</li>
+  <li><b>Inserting a row for every event in a current-state table.</b> Update the matching order by key.</li>
+  <li><b>Assuming MERGE means exactly-once.</b> Handle duplicates and stale events yourself.</li>
+  <li><b>Assuming a delete event carries every column.</b> Check the connector and logging settings.</li>
+</ul>
+
+<div class="callout">
+  <h2>Why this matters</h2>
+  <p>A polled copy of the orders table looks correct until someone checks the deleted drafts. CDC turns each change, deletes included, into data the pipeline carries. Nothing depends on a surviving row to announce the change.</p>
+</div>
+
+<h2 id="takeaways">Key takeaways</h2>
+<ol class="takeaways">
+  <li><span><b>Polling misses hard deletes.</b> A timestamp query needs a surviving row to notice a change.</span></li>
+  <li><span><b>Log-based CDC reads the log the database already keeps.</b> Inserts, updates and deletes all arrive as events.</span></li>
+  <li><span><b>Each tool has one job.</b> Debezium observes, Kafka stores and distributes, Snowflake analyses.</span></li>
+  <li><span><b>Recover from a checkpoint.</b> Resume from the saved offset, apply changes idempotently and clear the backlog at a controlled rate.</span></li>
+  <li><span><b>Store deletes on purpose.</b> Keep a current-state table for reports and an event history for traceability.</span></li>
+</ol>
+
+        </div>
+        <div class="prevnext"><a class="prev" href="ACID_Databases.html"><small>&larr; Previous</small><span>ACID in databases</span></a><a class="next" href="../Journals.html"><small>Back &rarr;</small><span>All journals</span></a></div>
+      </div>
+    </div>
+  </article>
+</main>
+
+<section class="contact" id="contact">
+  <div class="wrap" style="max-width:1040px">
+    <div>
+      <h2>Let's talk</h2>
+      <p>I am open to data analyst roles and projects. The quickest way to reach me is email.</p>
+      <div class="rows">
+        <a href="mailto:benson.kimani.mukuria@gmail.com">benson.kimani.mukuria@gmail.com</a>
+        <a href="tel:+254796436966">+254 796436966</a>
+      </div>
+    </div>
+    <div class="actions">
+      <a class="btn solid" href="mailto:benson.kimani.mukuria@gmail.com">Email me</a>
+      <a class="btn ghost" href="../assets/BENSON%20KIMANI%20MUKURIA.pdf" target="_blank" rel="noopener">Download resume</a>
+      <a class="btn ghost" href="https://www.linkedin.com/in/benson-kimani-mukuria" target="_blank" rel="noopener">LinkedIn</a>
+    </div>
+  </div>
+</section>
+
+<footer><div class="wrap" style="max-width:1040px">&copy; Benson Kimani</div></footer>
+
+</body>
+</html>
