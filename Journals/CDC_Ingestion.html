@@ -317,19 +317,7 @@ WHERE updated_at &gt; :last_sync;</pre>
 <p>The row is gone from PostgreSQL. The event still tells every downstream system about the deletion. CDC captures the fact of a delete, not only the rows left behind.</p>
 <p>The columns inside a delete event depend on the connector setup and the database logging settings. Do not assume every deleted row arrives with every original value.</p>
 
-<h2 id="q1">Design question 1: capture deletes without application triggers</h2>
-<p>The answer is log-based CDC with PostgreSQL logical decoding and Debezium. The steps:</p>
-<ol>
-  <li>Configure PostgreSQL for logical replication, with a replication slot and an output plugin.</li>
-  <li>Run the Debezium PostgreSQL connector with the replication permissions the connector needs.</li>
-  <li>Debezium reads committed row-level changes from the logical stream: inserts, updates and deletes.</li>
-  <li>Send the events to Kafka for downstream consumers.</li>
-  <li>Apply the changes in Snowflake so each order matches the current source state.</li>
-</ol>
-<p>A trigger adds database logic for each change and means altering the application. Log-based CDC reads the log the database already writes.</p>
-<p>CDC still has a cost. Replication slots keep WAL until the connector reads the log, so retained WAL takes storage. Monitor the slot and the WAL size.</p>
-
-<h2 id="q2">Design question 2: the pipeline stops for two hours</h2>
+<h2 id="q2">So what happens when the pipeline stops for two hours?</h2>
 <p>The first instinct is to restart the job and reload everything. Skip this. Recover from the last saved position, process the backlog and apply changes safely. Three terms help:</p>
 <dl class="hyp">
   <div><dt>Checkpoint, or offset</dt><dd>A saved position showing how far the pipeline has read. For PostgreSQL CDC, the Log Sequence Number (LSN) marks a position in the WAL.</dd></div>
