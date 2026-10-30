@@ -30,6 +30,11 @@
   .topbar nav a:hover{color:var(--ink)}
   .topbar nav a.pill{color:var(--paper);background:var(--ink);padding:7px 16px;border-radius:999px;font-weight:600}
   .topbar nav a.pill:hover{background:var(--clay-dark);color:#fff}
+  /* CHANGE 2: mobile menu styles (new) */
+  .topbar nav .links{display:flex;align-items:center;gap:22px}
+  .menu-btn{display:none;font:inherit;font-size:.9rem;font-weight:600;color:var(--ink);background:transparent;border:1px solid var(--ink);border-radius:999px;padding:6px 14px;cursor:pointer}
+  .menu-btn:hover{background:var(--ink);color:var(--paper)}
+  .menu-btn:focus-visible{outline:2px solid var(--sage);outline-offset:3px}
 
   /* hero */
   .hero{padding-block:72px 56px}
@@ -114,21 +119,38 @@
     .cards,.about{grid-template-columns:1fr}
     .about{gap:28px}
     .contact .wrap{grid-template-columns:1fr}
-    .topbar nav a.hide-sm{display:none}
+    /* CHANGE 3: the old rule .hide-sm{display:none} hid every menu link on phones. Replaced with a Menu button and dropdown. */
+    .topbar .wrap{position:relative;flex-wrap:wrap}
+    .topbar nav{gap:10px}
+    .js .menu-btn{display:inline-block}
+    .topbar nav .links{flex-direction:column;align-items:stretch;gap:0;position:absolute;top:100%;left:0;right:0;background:var(--panel);border-bottom:1px solid var(--line);box-shadow:0 18px 30px -22px rgba(30,35,33,.5);padding:6px 24px 10px}
+    .topbar nav .links a{padding:13px 0;font-size:1rem;border-bottom:1px solid var(--line-soft)}
+    .topbar nav .links a:last-child{border-bottom:0}
+    .js .topbar nav .links{display:none}
+    .js .topbar nav .links.open{display:flex}
+    html:not(.js) .topbar nav{flex-wrap:wrap}
+    html:not(.js) .topbar nav .links{position:static;flex-direction:row;flex-wrap:wrap;gap:6px 18px;background:transparent;box-shadow:none;border:0;padding:0;width:100%;order:3}
+    html:not(.js) .topbar nav .links a{padding:4px 0;font-size:.9rem;border:0}
   }
   @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}.card{transition:none}.card:hover{transform:none}}
 </style>
+<!-- CHANGE 1: flags that JavaScript is running, so the mobile menu button only takes over when it can work -->
+<script>document.documentElement.classList.add("js")</script>
 </head>
 <body>
 
 <header class="topbar">
   <div class="wrap">
     <a class="brand" href="index.html">Benson Kimani</a>
+    <!-- CHANGE 4: links grouped in .links, Menu button added, hide-sm classes removed -->
     <nav aria-label="Main">
-      <a class="hide-sm" href="#projects">Projects</a>
-      <a class="hide-sm" href="#about">About</a>
-      <a class="hide-sm" href="Journals.html">Journals</a>
-      <a class="hide-sm" href="#contact">Contact</a>
+      <button class="menu-btn" id="menuBtn" type="button" aria-expanded="false" aria-controls="menuLinks">Menu</button>
+      <div class="links" id="menuLinks">
+        <a href="#projects">Projects</a>
+        <a href="#about">About</a>
+        <a href="Journals.html">Journals</a>
+        <a href="#contact">Contact</a>
+      </div>
       <a class="pill" href="assets/BENSON KIMANI MUKURIA.pdf" target="_blank" rel="noopener">Resume</a>
     </nav>
   </div>
@@ -260,6 +282,20 @@
 </section>
 
 <footer><div class="wrap">&copy; 2026 Benson Kimani</div></footer>
+
+<!-- CHANGE 5: menu toggle script (opens/closes, closes on link tap, outside tap or Escape) -->
+<script>
+(function(){
+  var btn=document.getElementById("menuBtn"),menu=document.getElementById("menuLinks");
+  if(!btn||!menu)return;
+  function set(open){menu.classList.toggle("open",open);btn.setAttribute("aria-expanded",open);btn.textContent=open?"Close":"Menu"}
+  btn.addEventListener("click",function(){set(!menu.classList.contains("open"))});
+  menu.addEventListener("click",function(e){if(e.target.tagName==="A")set(false)});
+  document.addEventListener("click",function(e){if(!e.target.closest(".topbar"))set(false)});
+  document.addEventListener("keydown",function(e){if(e.key==="Escape")set(false)});
+  window.addEventListener("resize",function(){if(window.innerWidth>860)set(false)});
+})();
+</script>
 
 </body>
 </html>
